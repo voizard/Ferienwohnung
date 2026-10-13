@@ -1,0 +1,208 @@
+% Ferienwohnung – Vergleich der Vermietungsphasen
+% Kompilieren:  tectonic reports/Phasenvergleich_Ferienwohnung.tex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,top=2.1cm,bottom=2.1cm,left=2.2cm,right=2.2cm]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage[htt]{hyphenat}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=black, urlcolor=blue!55!black,
+  pdftitle={Ferienwohnung - Vergleich der Vermietungsphasen},
+  pdfauthor={Host}
+}
+
+\definecolor{grau}{gray}{0.35}
+\newcommand{\hinweis}[1]{\par\vspace{3pt}\noindent\textcolor{grau}{\small #1}\par\vspace{5pt}}
+\setlist[itemize]{topsep=2pt,itemsep=1.5pt,parsep=0pt,leftmargin=*}
+\setlength{\emergencystretch}{1.5em}
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\arraystretch}{1.15}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Ferienwohnung – Vergleich der Vermietungsphasen}\\[7pt]
+{\small Erstellt: 12.10.2026 · Datenbasis: Airbnb-Einnahmen-Export, 44 Buchungen · Beträge netto in EUR}\\[2pt]
+{\small Phase 1: Okt--Dez 2025 · Phase 2: Mai--Sep 2026 · Zwischen den Phasen lag eine Renovierung.}\\[4pt]
+{\small\itshape Fassung 2 – Buchbarkeitsfenster Phase 1 korrigiert: letzte Nacht 13.12.2025 (Abreise 14.12.2025), nicht 31.12.2025.}
+\end{center}
+\vspace{-2pt}
+\hrule
+\vspace{8pt}
+
+\section{Kurzfassung}
+
+\begin{itemize}
+  \item \textbf{Der Umsatz wuchs über die Auslastung, nicht über den Preis.}
+        Der Erlös je belegter Nacht blieb praktisch konstant (+1,1\,\%), die Auslastung
+        stieg von 68,6\,\% auf 91,0\,\%. Der Umsatz je \emph{verfügbarer} Nacht (RevPAR)
+        stieg dadurch um +37\,\%.
+  \item \textbf{Airbnb hat das Gebührenmodell gewechselt.} Aus 3,57\,\% (Split Fee)
+        wurden 18,45\,\% (Host-Only Fee). Aus Vermietersicht hat sich der Airbnb-Anteil
+        damit mehr als verfünffacht.
+  \item \textbf{Die Preiserhöhung war eine Kompensation, kein Gewinn.} Sie war mit
+        +19,6\,\% richtig bemessen, um die Gebühr auszugleichen – mehr aber auch nicht.
+  \item \textbf{Der Gast hat kaum mehr gezahlt} (+4,0 € je belegter Nacht). Den Zuwachs
+        hat Airbnb abgeschöpft.
+  \item \textbf{Konsequenz:} Der Preisspielraum ist strukturell enger geworden. Der
+        nächste Preisschritt muss bewusst auf die Marge zielen, nicht auf den
+        Gebührenausgleich.
+\end{itemize}
+
+\section{Was sich geändert hat: das Gebührenmodell}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}p{4.6cm}p{4.6cm}p{4.9cm}@{}}
+\toprule
+ & \textbf{Phase 1} & \textbf{Phase 2} \\
+\midrule
+Modell & Split Fee & Host-Only Fee \\
+Deine Gebühr & 3\,\% + MwSt. = \textbf{3,57\,\%} & 15,5\,\% + MwSt. = \textbf{18,45\,\%} \\
+Gästegebühr & 14,1--16,5\,\% – im Checkout \textbf{sichtbar} & keine – im Preis enthalten \\
+Was der Gast sieht & Zimmerpreis \textbf{plus} Aufschlag & der eine, fertige Preis \\
+Im Host-Export sichtbar & Gästegebühr \textbf{nein} & entfällt \\
+\bottomrule
+\end{tabular}
+\caption{Gebührenmodelle im Vergleich}
+\end{table}
+
+Die Werte für die eigene Gebühr sind aus den Daten gemessen (Servicegebühr ÷
+Bruttoeinkünfte). Die Gästegebühr der Phase 1 steht \textbf{nicht} im Host-Export –
+angegeben ist der Bereich, den Airbnb im Hilfecenter nennt (Artikel 1857). Die
+Mehrwertsteuer ist dort laut Airbnb bereits enthalten.
+
+\section{Drei Preisebenen – und ihre Falle}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}p{4.0cm}p{5.6cm}rr@{}}
+\toprule
+\textbf{Ebene} & \textbf{Bedeutung} & \textbf{Phase 1} & \textbf{Phase 2} \\
+\midrule
+Auszahlung (netto) & was beim Vermieter ankommt & 56,71 € & 57,36 € \\
+Listenpreis & was der Gast als Zimmerpreis sieht & 58,81 € & 70,33 € \\
+Gast-Endpreis & was der Gast tatsächlich zahlt & ca.\ 67,63 € & 70,33 € \\
+\bottomrule
+\end{tabular}
+\caption{Die drei Preisebenen}
+\end{table}
+
+\hinweis{\textbf{Wichtig:} Die Spalte »Bruttoeinkünfte« heißt in beiden Phasen gleich und
+bedeutet doch etwas anderes – in Phase 1 den Listenpreis \textbf{ohne} Gästegebühr, in
+Phase 2 den \textbf{Endpreis}. Ein naiver Brutto-Vergleich über die Phasen vergleicht
+zwei verschiedene Dinge.}
+
+\section{Kennzahlen im Vergleich}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Kennzahl} & \textbf{Phase 1} & \textbf{Phase 2} & \textbf{Veränderung} \\
+\midrule
+Buchungen & 7 & 37 & – \\
+Belegte Nächte & 35 & 113 & – \\
+Verfügbare Nächte & 51 & 122 (132 $-$ 10 gesperrt) & – \\
+\textbf{Auslastung} & 68,6 \% & \textbf{91,0 \%} & +22,4 Pp \\
+Umsatz netto & 1.984,81 € & 6.481,13 € & +227 \% \\
+\textbf{ADR netto} (Ø €/belegte Nacht) & 56,71 € & 57,36 € & +1,1 \% \\
+\textbf{RevPAR} (Ø €/verfügbare Nacht) & 38,92 € & 53,12 € & +37 \% \\
+Ø Aufenthalt & 5,0 Nächte & 3,1 Nächte & – \\
+Servicegebühr-Quote & 3,57 \% & 18,45 \% & +14,9 Pp \\
+\bottomrule
+\end{tabular}
+\caption{Kennzahlen der beiden Vermietungsphasen}
+\end{table}
+
+Die Auslastung zählt nur Nächte innerhalb des Buchbarkeitsfensters. In Phase 2 waren
+\textbf{10 Nächte gesperrt} (07.--16.08.2026); ohne diesen Abzug läge die Auslastung
+fälschlich bei 84,1 \% statt 91,0 \%.
+
+\section{Der Preisvergleich je belegter Nacht}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+ & \textbf{Phase 1} & \textbf{Phase 2} & \textbf{Veränderung} \\
+\midrule
+\textbf{Gast zahlt} & ca.\ 67,63 € & 70,33 € & \textbf{+4,0} \\
+\textbf{Du bekommst (netto)} & 56,71 € & 57,36 € & \textbf{+1,1} \\
+\textbf{Airbnb bekommt} & ca.\ 10,92 € & 12,97 € & \textbf{+18,8} \\
+Airbnb-Anteil am Gastpreis & 16,1 \% & 18,4 \% & +2,3 Pp \\
+\bottomrule
+\end{tabular}
+\caption{Wer am Gastpreis verdient}
+\end{table}
+
+Der Gastpreis der Phase 1 ist eine Näherung: Der Listenpreis ist gemessen, die
+Gästegebühr ist mit 15 \% angesetzt (Airbnb-Band 14,1--16,5 \%). Über das ganze Band
+bleibt die Aussage stabil – der Gastpreis steigt um +2,7 bis +4,8, während Airbnb
+zwischen +24,8 und +9,9 mehr nimmt.
+
+\section{Warum der Preis steigen musste}
+
+Damit \textbf{dieselbe Auszahlung} herauskommt, muss der Listenpreis mit dem Faktor
+\[
+\frac{1 - 3{,}57\,\%}{1 - 18{,}45\,\%}
+\]
+multipliziert werden – das sind \textbf{+18,2 \%}.
+
+Tatsächlich gestiegen: \textbf{+19,6 \%}. Die Erhöhung war damit korrekt bemessen – sie
+hat die Gebühr genau kompensiert und den Netto-Erlös stabil gehalten
+(56,71 € $\rightarrow$ 57,36 €).
+
+\section{Der Multiplikator-Effekt}
+
+Jede künftige Netto-Erhöhung um 1 € verlangt jetzt eine Listenpreis-Erhöhung von
+\textbf{1,23 €}. Vor der Umstellung waren es 1,04 €. Der Preisspielraum ist damit
+strukturell enger geworden – unabhängig von der Auslastung.
+
+\section{Methodik und Stolpersteine}
+
+\begin{itemize}
+  \item \textbf{Buchbarkeitsfenster.} Phase 1: 24.10.--13.12.2025 = 51 Tage (letzte
+        Nacht; Abreise des letzten Gastes am 14.12.2025). Phase 2: 22.05.--30.09.2026
+        = 132 Tage $-$ 10 gesperrte = 122 verfügbare Nächte.
+  \item \textbf{Auslastung} nur innerhalb der Buchbarkeitsfenster; gesperrte Nächte sind
+        abgezogen (Phase 2: 07.--16.08.2026).
+  \item \textbf{Storno = Umsatz ohne Belegung.} Eine Buchung wurde storniert und trotzdem
+        ausgezahlt: 127,43 € in Phase 2. Sie zählt zum Umsatz, aber mit 0 belegten Nächten.
+        Das hebt den ADR leicht an.
+  \item \textbf{Umsatz $\neq$ Belegung.} In Phase 2 stehen 148 belegten Nächten 156
+        bezahlte gegenüber (Storno + eine doppelt gebuchte Verlängerung).
+  \item \textbf{Gästegebühr Phase 1} ist nicht im Export messbar; gerechnet wird mit dem
+        von Airbnb genannten Band 14,1--16,5 \% (Arbeitswert 15 \%).
+  \item \textbf{Keine kausale Aussage.} Phase 1 (Herbst/Winter) und Phase 2 (Sommer)
+        unterscheiden sich saisonal. Der Phasenvergleich zeigt den Zusammenhang, nicht die
+        Ursache.
+  \item \textbf{Kosten fehlen} (Nebenkosten, Reinigung, Instandhaltung) – ein
+        Deckungsbeitrag ist daher nicht berechenbar.
+\end{itemize}
+
+\section{Fazit}
+
+Der Sprung in Phase 2 kam aus der Nachfrage, nicht aus dem Preis: Bei 91,0 \%
+Auslastung und praktisch unverändertem Netto-Preis je Nacht ist der Umsatz je
+verfügbarer Nacht um +37 \% gestiegen. Der gleichzeitig nötige Preisaufschlag von
++19,6 \% diente allein dem Ausgleich der Airbnb-Gebührenumstellung – er hat die Marge
+nicht erhöht, sondern nur erhalten. Bei dieser Auslastung ist der Nachfrage-Raum
+vorhanden, um den Netto-Preis jetzt aktiv zu erhöhen.
+
+\end{document}

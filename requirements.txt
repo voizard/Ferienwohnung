@@ -1,4 +1,0 @@
-# Aufbereitungsskripte (daten/): nur Standardbibliothek noetig.
-# Nur der PDF-Report braucht Zusatzpakete:
-markdown>=3.5
-weasyprint>=60

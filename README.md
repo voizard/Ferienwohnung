@@ -175,7 +175,8 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `daten/build_kalender_tagesbasis.py` – Tages-Tabelle mit Buchbarkeitsfenstern
 - `daten/add_flags_to_kalender.py` – ergänzt `kalender.csv` um Betriebsphase/Verfügbar/Belegt
 - `dax/measures.md` – alle Measures mit Erklärung
-- `reports/Phasenvergleich_Ferienwohnung.pdf` – Report als PDF (3 Seiten)
+- `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
+- `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)
 - `screenshots/01_overview.png` – Startseite des Reports
 - `pbix/eigene_Airbnb_Auswertung.pbix` – Power BI Datei
 
@@ -190,11 +191,13 @@ python3 daten/build_datasets.py             # Roh-Export → buchungen/anpassung
 python3 daten/build_kalender_tagesbasis.py  # Tages-Tabelle mit Buchbarkeitsfenstern
 python3 daten/add_flags_to_kalender.py      # Flags in kalender.csv zurückschreiben
 python3 reports/build_xlsx.py               # Excel-Datei für Power BI
-python3 reports/build_phasenvergleich.py    # Markdown- und PDF-Report (braucht requirements.txt)
+tectonic reports/Phasenvergleich_Ferienwohnung.tex --outdir reports  # LaTeX-Report → PDF
 ```
 
 Die Skripte sind idempotent: sie lesen die CSVs aus `daten/` und schreiben sie
-zurück. Voraussetzung für den PDF-Report: `pip install -r requirements.txt`.
+zurück. Die Aufbereitung braucht nur die Python-Standardbibliothek; der Report ist
+ein LaTeX-Dokument und wird mit [Tectonic](https://tectonic-typesetting.github.io)
+gebaut (Tectonic zieht die Pakete selbst nach, kein TeX-Install nötig).
 
 ## Lizenz
 
