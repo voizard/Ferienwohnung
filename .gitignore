@@ -1,0 +1,21 @@
+# Roh-Export und Zwischenstaende (enthalten Zahlungsdaten) - nie committen
+raw/
+data/raw/
+*.zip
+
+# Lokale Arbeitskopien / Backups (regenerierbar)
+daten/kalender_backup_*.csv
+daten/kalender_flags.csv
+daten/kalender_tagesaktuell.csv
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
