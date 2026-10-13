@@ -14,7 +14,7 @@ revenue without nights, and Airbnb's fee-model switch that changed what
 "price" means. All measures documented in [`dax/measures.md`](dax/measures.md).
 
 <!-- Screenshot der Startseite -->
-![Übersicht](screenshots/01_overview.png)
+![Übersicht](screenshots/01_overview.png?v=2)
 
 ## Worum es geht
 
@@ -177,7 +177,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `dax/measures.md` – alle Measures mit Erklärung
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
 - `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)
-- `screenshots/01_overview.png` – Startseite des Reports
+- `screenshots/01_overview.png` – Startseite des Reports (KPI-Karten und Monatsverlauf)
 - `pbix/eigene_Airbnb_Auswertung.pbix` – Power BI Datei
 
 ## Reproduktion
