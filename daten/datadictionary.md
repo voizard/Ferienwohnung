@@ -6,7 +6,7 @@ Quelle, Spalten, Typen, Bereinigungsregeln – und die Fallen, die im Export ste
 
 | Quelle | Format | Inhalt | Zeitraum |
 | --- | --- | --- | --- |
-| Airbnb-Einnahmen-Export | CSV (UTF-8 BOM) | Buchungen, Payouts, Anpassungen | Jun 2020 – Okt 2026 |
+| Airbnb-Einnahmen-Export | CSV (UTF-8 BOM) | Buchungen, Payouts, Anpassungen | Jun 2020 – Nov 2026 |
 | Airbnb-Monatsdateien | CSV | Teilmengen (10–12/2025, 05–08/2026) | Teilmenge |
 
 **Entscheidungen:**
@@ -24,20 +24,20 @@ Quelle, Spalten, Typen, Bereinigungsregeln – und die Fallen, die im Export ste
 | Renovierung 1 | – | bis Sep 2025 |
 | **Phase 1** | Okt – Dez 2025 | **24.10.2025** – **13.12.2025** *(bestätigt: Vermietungsstart 24.10.2025; letzte Nacht 13.12.2025, Abreise des letzten Gastes 14.12.2025)* |
 | Renovierung 2 | – | Jan – Apr 2026 |
-| **Phase 2** | Mai – Sep 2026 | **22.05.2026** – 30.09.2026 *(bestätigt)*, **10 Nächte gesperrt** (07.–16.08.) |
+| **Phase 2** | Mai – Okt 2026 | **22.05.2026** – 31.10.2026 *(bestätigt 02.11.2026: Betrieb lief ohne Saisonbruch weiter; letzte belegte Nacht 31.10., Abreise 01.11.2026)*, **10 Nächte gesperrt** (07.–16.08.) |
 
 Die Renovierungsmonate und die **gesperrten Nächte** zählen **nicht** als
 verfügbar. Phase 1 hat damit 51 Kalendertage (24.10.–13.12.2025), Phase 2 hat
-132 Kalendertage − 10 gesperrte = **122 verfügbare Nächte**. Würde man die
-Sperre mitzählen, läge die Auslastung von Phase 2 fälschlich bei 84,1 % statt
-91,0 %.
+163 Kalendertage (22.05.–31.10.2026) − 10 gesperrte = **153 verfügbare Nächte**.
+Würde man die Sperre mitzählen, läge die Auslastung von Phase 2 fälschlich bei
+86,5 % statt 92,2 %.
 
 ## Tabellen
 
-### `buchungen.csv` (Fakt) – 44 Zeilen
+### `buchungen.csv` (Fakt) – 53 Zeilen
 | Spalte | Typ | Beschreibung |
 | --- | --- | --- |
-| `Buchung_ID` | Text | B001…B044, technisch vergeben |
+| `Buchung_ID` | Text | B001…B053, technisch vergeben |
 | `Betriebsphase` | Text | zugeordnet über das **Anreisedatum** |
 | `Waehrung` | Text | alle EUR |
 | `Buchungsdatum` | Datum | Zeitpunkt der Buchung |
@@ -75,10 +75,10 @@ sie gehörte zu einer 2020er-Buchung und wäre ohne Gegenstück in `buchungen`
 verwaist.
 
 ### `kalender.csv` (Dimension)
-Täglich, 24.10.2025 – 03.10.2026 (bereinigt um die ausgeschlossenen 2020-Daten).
+Täglich, 24.10.2025 – 01.11.2026 (bereinigt um die ausgeschlossenen 2020-Daten).
 Spalten: `Datum`, `Jahr`, `Quartal`, `Monat`, `Monatsname`, `Kalenderwoche`,
 `Wochentag`, **`Betriebsphase`**, **`Verfuegbar`** (ja/nein), **`Belegt`** (ja/nein)
-– 10 Spalten, 345 Zeilen. **Als Datumstabelle markieren** (Spalte `Datum`).
+– 10 Spalten, 374 Zeilen. **Als Datumstabelle markieren** (Spalte `Datum`).
 
 Tage außerhalb der Buchbarkeitsfenster tragen die Phase
 `Zwischenzeit (nicht buchbar)` mit `Verfuegbar = nein`. Erzeugt von
@@ -96,7 +96,7 @@ Tage außerhalb der Buchbarkeitsfenster tragen die Phase
 Landesformat parst, bekommt Faktor-100-Fehler. Gelöst in `build_datasets.py`.
 
 **2. Payout-Zeilen sind keine Umsätze.**
-67 der 137 Rohzeilen sind `Typ = Payout` – Auszahlungsereignisse, die jede
+100 der 155 Rohzeilen sind `Typ = Payout` – Auszahlungsereignisse, die jede
 Buchung **spiegeln**. Wer naiv über `Betrag` summiert, zählt doppelt.
 Deshalb: nur `Typ = Buchung` in die Faktentabelle.
 
@@ -105,13 +105,13 @@ Deshalb: nur `Typ = Buchung` in die Faktentabelle.
 | Zeitraum | Servicegebühr-Anteil |
 | --- | --- |
 | Phase 1 (Okt–Dez 2025) | ~3,6 % |
-| Phase 2 (Mai–Sep 2026) | ~18,4 % |
+| Phase 2 (Mai–Okt 2026) | ~18,4 % |
 
 Airbnb hat das Modell umgestellt. **Bruttobeträge sind über die Phasen nicht
 vergleichbar**, der Netto-Betrag schon. Auswirkung: Bei gleichbleibendem
-Netto-Erlös stieg der Bruttopreis je Nacht von 58,81 € auf 70,33 € (+20 %).
-Zum reinen Gebührenausgleich wären 18,1 % nötig gewesen – die Differenz ist
-der verlorene Preisspielraum.
+Netto-Erlös stieg der Listenpreis je Nacht von 58,81 € auf 71,21 € (+21,1 %).
+Zum reinen Gebührenausgleich wären 18,3 % nötig gewesen – die Differenz ist
+der gewonnene Preisspielraum.
 
 **4. Personenbezug in der Details-Spalte.**
 `Details` enthält die Zahlungsadresse des Hosts (E-Mail).
@@ -142,7 +142,7 @@ Kontext des Datensatzes – ohne ihn ist jede Preisaussage falsch.
 | Phase | Modell | Host-Gebühr (belegt) | Gästegebühr |
 | --- | --- | --- | --- |
 | 1 (Okt–Dez 2025) | Split Fee | 3,57 % (= 3 % + MwSt.) | 14,1–16,5 % (Airbnb-Doku) |
-| 2 (Mai–Sep 2026) | Host-Only Fee | 18,45 % (= 15,5 % + MwSt.) | 0 % – im Preis enthalten |
+| 2 (Mai–Okt 2026) | Host-Only Fee | 18,45 % (= 15,5 % + MwSt.) | 0 % – im Preis enthalten |
 
 Die Host-Gebühren sind **aus den Daten belegt** (`Servicegebühr / Bruttoeinkünfte`).
 Die Gästegebühr der Phase 1 ist **nicht am eigenen Konto messbar** – der
@@ -170,10 +170,11 @@ bereits enthalten. Arbeitswert für Berechnungen: **15 %**.
 - **Verfügbare Nächte:** nur die Buchbarkeitsfenster der Phasen; Renovierungs-
   monate sind kein Bestandteil des Nenners.
 - **Buchungszuordnung:** Eine Buchung wird dem Monat ihrer **Anreise** zugerechnet.
-- **Phase-1-Fenster ist bestätigt** (24.10.–13.12.2025, Stand 12.10.2026; der
-  14.12.2025 ist nur der Abreisetag). Ändert sich das Datum erneut, in `betriebsphasen`
+- **Beide Fenster sind bestätigt.** Phase 1: 24.10.–13.12.2025 (Stand 12.10.2026; der
+  14.12.2025 ist nur der Abreisetag). Phase 2: 22.05.–31.10.2026 (Stand 02.11.2026; der
+  01.11.2026 ist nur der Abreisetag). Ändert sich das Datum erneut, in `betriebsphasen`
   **und** in `build_datasets.py`, `build_kalender_tagesbasis.py` und
-  `build_phasenvergleich.py` anpassen.
+  `reports/build_xlsx.py` anpassen.
 - **Gesperrte Nächte** (Eigennutzung, Reparatur) sind im Export nicht sichtbar;
   die Auslastung ist dadurch eine **Obergrenze**.
 - **Kosten fehlen** (Nebenkosten, Reinigung, Instandhaltung) → kein Deckungsbeitrag.

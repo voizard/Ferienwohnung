@@ -29,17 +29,21 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 # Phase 1 endet am 13.12.2025 (vom Host bestaetigt 2026-10-12): letzte Nacht war
 # der 13.12., der 14.12.2025 ist nur der Abreisetag des letzten Gastes (B038).
 # NICHT 31.12.2025 und nicht 14.12.2025.
+# Phase 2 lief ohne Unterbrechung in den Herbst hinein (vom Host bestaetigt
+# 2026-11-02, Variante A: der Betrieb ging weiter, kein Saisonbruch). Ende =
+# letzte belegte Nacht 31.10.2026; der 01.11.2026 ist nur Abreisetag.
 PHASEN = [
     ('Phase 1 (Okt-Dez 2025)', datetime.date(2025, 10, 24), datetime.date(2025, 12, 13)),
-    ('Phase 2 (Mai-Sep 2026)', datetime.date(2026, 5, 22), datetime.date(2026, 9, 30)),
+    ('Phase 2 (Mai-Okt 2026)', datetime.date(2026, 5, 22), datetime.date(2026, 10, 31)),
 ]
 # Gesperrt (Eigennutzung/Instandhaltung) - zaehlt NICHT als verfuegbar.
 GESPERRT = [(datetime.date(2026, 8, 7), datetime.date(2026, 8, 16))]
 
 START = min(p[1] for p in PHASEN)          # 2025-10-24
-# ENDE bewusst bis 2026-10-03: identischer Zeitraum wie die alte kalender.csv
-# (345 Zeilen) -> laesst sich 1:1 ueber 'Datum' zusammenfuehren.
-ENDE = datetime.date(2026, 10, 3)
+# ENDE = Abreisetag des letzten Aufenthalts (01.11.2026). Die letzte belegte
+# Nacht ist der 31.10.2026; der 01.11. ist nur Abreisetag und traegt als Tag
+# ausserhalb der Fenster 'Zwischenzeit (nicht buchbar)'.
+ENDE = datetime.date(2026, 11, 1)
 WOCHENTAG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 MONATSNAME = ['January', 'February', 'March', 'April', 'May', 'June',
               'July', 'August', 'September', 'October', 'November', 'December']

@@ -42,18 +42,19 @@ AUSSCHLIESSEN_AB = datetime.date(2021, 1, 1)   # alles davor (2020) raus
 STORNO = {
     (datetime.date(2026, 8, 11), datetime.date(2026, 9, 24), 127.43),
 }
-# Buchbarkeitsfenster je Phase = Nenner der Auslastung (Annahme, vom Host
-# bestätigt: Phase 2 erst ab 22.05.2026 buchbar).
+# Buchbarkeitsfenster je Phase = Nenner der Auslastung (vom Host bestaetigt:
+# Phase 2 erst ab 22.05.2026 buchbar; Ende 31.10.2026 - der Betrieb lief ohne
+# Saisonbruch bis in den Herbst, letzte belegte Nacht 31.10.2026).
 FENSTER = {
     'Phase 1 (Okt-Dez 2025)': (datetime.date(2025, 10, 24), datetime.date(2025, 12, 13)),
-    'Phase 2 (Mai-Sep 2026)': (datetime.date(2026, 5, 22), datetime.date(2026, 9, 30)),
+    'Phase 2 (Mai-Okt 2026)': (datetime.date(2026, 5, 22), datetime.date(2026, 10, 31)),
 }
 
 # Gesperrte Zeiträume (Eigennutzung/Reparatur) – zählen NICHT als verfügbar.
 # Vom Host bestätigt: 07.08.2026 bis 16.08.2026 = 10 Nächte geblockt.
 # (Vorgänger B013 reist am 07.08. ab, Nachfolger B012 kommt am 17.08. – keine Kollision.)
 BLOCKIERT = {
-    'Phase 2 (Mai-Sep 2026)': [(datetime.date(2026, 8, 7), datetime.date(2026, 8, 16))],
+    'Phase 2 (Mai-Okt 2026)': [(datetime.date(2026, 8, 7), datetime.date(2026, 8, 16))],
 }
 
 
@@ -83,7 +84,7 @@ def phase(d):
         return None
     if d < datetime.date(2026, 1, 1):
         return 'Phase 1 (Okt-Dez 2025)'
-    return 'Phase 2 (Mai-Sep 2026)'
+    return 'Phase 2 (Mai-Okt 2026)'
 
 
 def load(path):

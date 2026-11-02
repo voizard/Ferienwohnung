@@ -92,19 +92,19 @@ lh = ['Thema', 'Inhalt']
 liesmich = [
     ['Datei', 'Datenbasis fuer das Power-BI-Projekt "Ferienwohnung"'],
     ['Erstellt', '2026-09-29'],
-    ['Blatt buchungen', '44 Buchungen (Faktentabelle). Eine Zeile = eine Buchung.'],
+    ['Blatt buchungen', '53 Buchungen (Faktentabelle). Eine Zeile = eine Buchung.'],
     ['Blatt anpassungen', 'Airbnb-Anpassungen/Mediationen (Faktentabelle). Zeilen vor 2021 sind ausgeschlossen, damit keine verwaiste Anpassung ohne Gegenstueck in buchungen entsteht.'],
-    ['Blatt kalender', 'Datumstabelle, taeglich 2025-10-24 bis 2026-10-03. In Power BI als Datumstabelle markieren (Spalte Datum).'],
+    ['Blatt kalender', 'Datumstabelle, taeglich 2025-10-24 bis 2026-11-01. In Power BI als Datumstabelle markieren (Spalte Datum).'],
     ['Blatt betriebsphasen', 'Buchbarkeitsfenster je Vermietungsphase - steuert die Auslastung.'],
     ['WICHTIG: Umsatz != Belegung', 'Netto_Betrag ist der Umsatz. Naechte_Belegt ist die Belegung. Beide koennen auseinanderfallen: (1) eine stornierte, aber trotzdem ausgezahlte Buchung hat Umsatz und 0 belegte Naechte; (2) eine Verlaengerung desselben Gastes zahlt zweimal, belegt aber nur einmal.'],
     ['Naechte_Belegt', 'Ist eine VEREINIGUNG der Aufenthaltszeitraeume, keine Summe. Ueberlappende Aufenthalte zaehlen nur einmal - sonst sinkt der ADR kuenstlich um ~6 %.'],
     ['Gebuehrenmodell', 'Phase 1: Split Fee, Host zahlt 3 % + MwSt = 3,57 %, Gast zahlt zusaetzlich 14,1-16,5 % (im Checkout sichtbar). Phase 2: Host-Only Fee, Host zahlt 15,5 % + MwSt = 18,45 %, Gast sieht nur den Endpreis.'],
     ['Spalte Brutto_Betrag', 'Achtung: bedeutet in beiden Phasen etwas anderes. In Phase 1 der Listenpreis OHNE Guestgegebuehr, in Phase 2 der Endpreis des Gastes. Nicht naiv ueber die Phasen vergleichen.'],
-    ['Auslastung / verfuegbare Naechte', 'Nur Naechte im Buchbarkeitsfenster zaehlen, gesperrte Naechte sind abzuziehen. Phase 2 hat 132 Kalendertage minus 10 gesperrte (07.-16.08.2026) = 122 verfuegbare Naechte.'],
+    ['Auslastung / verfuegbare Naechte', 'Nur Naechte im Buchbarkeitsfenster zaehlen, gesperrte Naechte sind abzuziehen. Phase 2 hat 163 Kalendertage (22.05.-31.10.2026) minus 10 gesperrte (07.-16.08.2026) = 153 verfuegbare Naechte.'],
     ['Beziehungen', 'kalender[Datum] (1) -> buchungen[Anreise] (*). betriebsphasen[Betriebsphase] (1) -> buchungen[Betriebsphase] (*).'],
     ['Datums-Spalten', 'Buchungsdatum, Anreise, Abreise (buchungen); Datum (kalender); Verfuegbar_ab, Verfuegbar_bis, Gesperrt_ab, Gesperrt_bis (betriebsphasen).'],
     ['Nicht enthalten', 'Keine personenbezogenen Gaestedaten. Die Details-Spalte des Airbnb-Exports (Zahlungsadresse) wurde bewusst verworfen.'],
-    ['Ausgeschlossen', 'Alle Buchungen vor 2021 (24 Zeilen aus Jun-Aug 2020) - sie gehoeren nicht zu den beiden Vermietungsphasen.'],
+    ['Ausgeschlossen', 'Alle Buchungen vor 2021 (24 Zeilen aus Jun-Aug 2020) - sie gehoeren nicht zu den beiden Vermietungsphasen. Ab 2026-11-02 enthaelt der Bestand auch die Buchungen bis 31.10.2026 (Phase 2 laeuft ohne Saisonbruch weiter).'],
     ['Kosten', 'Noch nicht enthalten: Nebenkosten, Reinigung, Instandhaltung. Ein Deckungsbeitrag ist daher derzeit nicht berechenbar.'],
 ]
 sheets.append(('LIESMICH', lh, liesmich))
@@ -117,8 +117,8 @@ ph_header = ['Betriebsphase', 'Verfuegbar_ab', 'Verfuegbar_bis', 'Kalendertage',
              'Gesperrt_ab', 'Gesperrt_bis', 'Gesperrte_Naechte', 'Verfuegbare_Naechte']
 ph_rows = [
     ['Phase 1 (Okt-Dez 2025)', dt.date(2025, 10, 24), dt.date(2025, 12, 13), 51, None, None, 0, 51],
-    ['Phase 2 (Mai-Sep 2026)', dt.date(2026, 5, 22), dt.date(2026, 9, 30), 132,
-     dt.date(2026, 8, 7), dt.date(2026, 8, 16), 10, 122],
+    ['Phase 2 (Mai-Okt 2026)', dt.date(2026, 5, 22), dt.date(2026, 10, 31), 163,
+     dt.date(2026, 8, 7), dt.date(2026, 8, 16), 10, 153],
 ]
 sheets.append(('betriebsphasen', ph_header, ph_rows))
 

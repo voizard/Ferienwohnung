@@ -39,9 +39,9 @@ Ohne diesen Schritt liefern `SAMEPERIODLASTYEAR` & Co. falsche Ergebnisse.
 
 ## 1b. Tages-Tabelle – damit EIN Measure reicht
 
-Die Tabelle **`daten/kalender_tagesbasis.csv`** (345 Zeilen, 2025-10-24 → 2026-10-03,
+Die Tabelle **`daten/kalender_tagesbasis.csv`** (374 Zeilen, 2025-10-24 → 2026-11-01,
 erzeugt von `daten/build_kalender_tagesbasis.py`) hat **eine Zeile pro Tag** und deckt
-exakt denselben Zeitraum wie die alte `kalender`-Tabelle ab – sie lässt sich also
+exakt denselben Zeitraum wie die `kalender`-Tabelle ab – sie lässt sich also
 **1:1 über `Datum` zusammenführen**:
 
 | Spalte | Inhalt |
@@ -72,9 +72,9 @@ wird sie nicht gebraucht.
 
 | Kontext | Belegt | Verfügbar | Auslastung |
 | --- | --- | --- | --- |
-| gesamt | 146 | 173 | **84,4 %** |
+| gesamt | 176 | 204 | **86,3 %** |
 | Phase 1 (24.10.–13.12.2025) | 35 | 51 | **68,6 %** |
-| Phase 2 (Mai–Sep 2026) | 111 | 122 | **91,0 %** |
+| Phase 2 (Mai–Okt 2026) | 141 | 153 | **92,2 %** |
 | Okt 2025 (ab 24.) | 3 | 8 | 37,5 % |
 | Nov 2025 | 27 | 30 | 90,0 % |
 | Dez 2025 (bis 13.) | 5 | 13 | 38,5 % |
@@ -83,6 +83,7 @@ wird sie nicht gebraucht.
 | Jul 2026 | 28 | 31 | 90,3 % |
 | Aug 2026 (abzgl. 10 gesperrt) | 21 | 21 | **100,0 %** |
 | Sep 2026 | 28 | 30 | 93,3 % |
+| Okt 2026 | 30 | 31 | **96,8 %** |
 
 > Mit dieser Tabelle werden die Measures aus Abschnitt 4 (`Auslastung % je Phase`,
 > `Auslastung % Phase 1/2`, `Gesperrte Naechte`, `Verfuegbare Naechte`) **überflüssig**.
@@ -105,7 +106,7 @@ DATATABLE (
     {
         { "Phase 0 (2020)", DATE ( 2020, 6, 10 ), DATE ( 2020, 8, 31 ) },
         { "Phase 1 (Okt-Dez 2025)", DATE ( 2025, 10, 24 ), DATE ( 2025, 12, 13 ) },
-        { "Phase 2 (Mai-Sep 2026)", DATE ( 2026, 5, 1 ), DATE ( 2026, 9, 30 ) }
+        { "Phase 2 (Mai-Okt 2026)", DATE ( 2026, 5, 22 ), DATE ( 2026, 10, 31 ) }
     }
 )
 ```
@@ -148,26 +149,26 @@ Verfuegbare Naechte =
         betriebsphasen,
         DATEDIFF ( betriebsphasen[Verfuegbar_ab], betriebsphasen[Verfuegbar_bis], DAY ) + 1
     )
-    - IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Sep 2026)", 10, 0 )
+    - IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Okt 2026)", 10, 0 )
 ```
 
 ```dax
 -- Gesperrte Nächte (Eigennutzung/Instandhaltung) sind NICHT verfügbar.
 -- Phase 2: 07.–16.08.2026 = 10 Nächte. Ohne diesen Abzug wäre die
--- Auslastung von Phase 2 fälschlich 84,1 % statt 91,0 %.
+-- Auslastung von Phase 2 fälschlich 86,5 % statt 92,2 %.
 --
 -- ⚠️ Phasenfalle: eine eigenständige Measure OHNE Phasenbezug liefert in JEDER
 -- Zeile 10 – auch in Phase 1 (Okt–Dez 2025), wo nichts gesperrt ist. Phase 1
 -- wäre dann 35/41 = 85,4 % statt korrekt 35/51 = 68,6 %. Deshalb phasengebunden:
 Gesperrte Naechte =
-    IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Sep 2026)", 10, 0 )
+    IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Okt 2026)", 10, 0 )
 
 -- Saubere Dauerlösung (statt der festen 10): eigene Tabelle `sperrzeiten` mit
 -- Betriebsphase-Spalte + Beziehung betriebsphasen[Betriebsphase] (1) →
 -- sperrzeiten[Betriebsphase] (*). Dann ist die Sperre automatisch phasengebunden:
 --
 --   sperrzeiten = DATATABLE ( "Betriebsphase", STRING, "Ab", DATETIME, "Bis", DATETIME,
---       { { "Phase 2 (Mai-Sep 2026)", DATE ( 2026, 8, 7 ), DATE ( 2026, 8, 16 ) } } )
+--       { { "Phase 2 (Mai-Okt 2026)", DATE ( 2026, 8, 7 ), DATE ( 2026, 8, 16 ) } } )
 --
 --   Gesperrte Naechte = SUMX ( sperrzeiten, DATEDIFF ( sperrzeiten[Ab], sperrzeiten[Bis], DAY ) + 1 )
 --
@@ -191,7 +192,7 @@ VAR Verfuegbar =
         betriebsphasen,
         DATEDIFF ( betriebsphasen[Verfuegbar_ab], betriebsphasen[Verfuegbar_bis], DAY ) + 1
     )
-        - IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Sep 2026)", 10, 0 )
+        - IF ( SELECTEDVALUE ( betriebsphasen[Betriebsphase] ) = "Phase 2 (Mai-Okt 2026)", 10, 0 )
 VAR Belegt =
     SUMX (
         FILTER ( buchungen, buchungen[Naechte_Belegt] > 0 ),
@@ -204,18 +205,19 @@ RETURN
     DIVIDE ( Belegt, Verfuegbar )
 ```
 
-**Verifizierte Werte** (aus `buchungen.csv`, 44 Zeilen nachgerechnet):
+**Verifizierte Werte** (aus `buchungen.csv`, 53 Zeilen nachgerechnet):
 
 | Betriebsphase | Belegt | Verfügbar | Auslastung |
 | --- | --- | --- | --- |
 | Phase 1 (24.10.–13.12.2025) | 35 | 51 | **68,6 %** |
-| Phase 2 (Mai–Sep 2026) | 111 | 122 | **91,0 %** |
-| beide ausgewählt | 146 | 173 | 84,4 % |
-| keine Auswahl (inkl. Phase 0) | 146 | 256 | 57,0 % — **bedeutungslos** |
+| Phase 2 (Mai–Okt 2026) | 141 | 153 | **92,2 %** |
+| beide ausgewählt | 176 | 204 | 86,3 % |
+| keine Auswahl (inkl. Phase 0) | 176 | 287 | 61,3 % — **bedeutungslos** |
 
-Ohne die Abschneide-Logik wären es 113/122 = **92,6 %** – das ist der Wert mit dem
-2-Nächte-Überhang von **B001** (Anreise 28.09.2026, Abreise 03.10.2026: 5 Nächte
-gebucht, davon 3 im Fenster). Die Report-Zahl **91,0 %** ist die phasengenaue.
+Das Buchungsfenster von Phase 2 reicht jetzt bis 31.10.2026 – der Überhang von **B001**
+(Anreise 28.09.2026, Abreise 03.10.2026) liegt damit vollständig im Fenster, die
+buchungsbasierte und die tageweise Zählung ergeben beide 141 Nächte. Die Report-Zahl
+**92,2 %** ist die phasengenaue.
 
 **Alternative: ein Measure pro Phase.** Beide sind vollständig selbstständig – sie
 ignorieren Slicer und Filterkontext und liefern immer die Zahl ihrer eigenen Phase.
@@ -239,7 +241,7 @@ RETURN
 
 ```dax
 Auslastung % Phase 2 =
-VAR Phase = "Phase 2 (Mai-Sep 2026)"
+VAR Phase = "Phase 2 (Mai-Okt 2026)"
 VAR Ab = CALCULATE ( MIN ( betriebsphasen[Verfuegbar_ab] ), betriebsphasen[Betriebsphase] = Phase )
 VAR Bis = CALCULATE ( MAX ( betriebsphasen[Verfuegbar_bis] ), betriebsphasen[Betriebsphase] = Phase )
 VAR Verfuegbar = ( Bis - Ab ) + 1 - 10   -- 10 Nächte gesperrt: 07.–16.08.2026
@@ -252,7 +254,7 @@ RETURN
     DIVIDE ( Belegt, Verfuegbar )
 ```
 
-Werte: **Auslastung % Phase 1 = 68,6 %** (35/51) · **Auslastung % Phase 2 = 91,0 %** (111/122).
+Werte: **Auslastung % Phase 1 = 68,6 %** (35/51) · **Auslastung % Phase 2 = 92,2 %** (141/153).
 
 > Nebenwirkung: Beide Measures sind konstant – der Betriebsphasen-Slicer hat auf sie
 > **keinen** Einfluss mehr. Wenn der Slicer die Quoten steuern soll, statt der festen
@@ -269,9 +271,9 @@ liegt (Matrix-Zeilen oder Slicer), liefert dieselbe Measure den Phasenwert.
 
 | Kontext | Umsatz netto | Belegte Nächte | ADR netto |
 | --- | --- | --- | --- |
-| gesamt | 8.465,94 € | 148 | **57,20 €** |
+| gesamt | 10.172,85 € | 176 | **57,80 €** |
 | Phase 1 (Okt–Dez 2025) | 1.984,81 € | 35 | **56,71 €** |
-| Phase 2 (Mai–Sep 2026) | 6.481,13 € | 113 | **57,36 €** |
+| Phase 2 (Mai–Okt 2026) | 8.188,04 € | 141 | **58,07 €** |
 
 Für **zwei Cards nebeneinander** (analog `Auslastung % Phase 1/2`) zwei feste Measures –
 sie ignorieren Slicer und liefern immer ihre eigene Phase:
@@ -288,7 +290,7 @@ ADR Netto Phase 1 =
 ADR Netto Phase 2 =
     CALCULATE (
         DIVIDE ( [Umsatz Netto], [Belegte Naechte] ),
-        buchungen[Betriebsphase] = "Phase 2 (Mai-Sep 2026)"
+        buchungen[Betriebsphase] = "Phase 2 (Mai-Okt 2026)"
     )
 ```
 
@@ -307,27 +309,26 @@ ADR Netto Phase 1 =
 ADR Netto Phase 2 =
     CALCULATE (
         DIVIDE ( SUM ( buchungen[Netto_Betrag] ), SUM ( buchungen[Naechte_Belegt] ) ),
-        buchungen[Betriebsphase] = "Phase 2 (Mai-Sep 2026)"
+        buchungen[Betriebsphase] = "Phase 2 (Mai-Okt 2026)"
     )
 ```
 
 **Drei Fallen**
 
 1. **Nie `AVERAGE ( buchungen[ADR_Netto] )`.** Die Spalte ist der ADR *je Buchung*; der
-   ungewichtete Mittelwert zählt kurze Aufenthalte gleich viel wie lange → Phase 1
-   **59,19 €** statt 56,71 €, Phase 2 **56,20 €** statt 57,36 €. Richtig ist immer
+   ungewichtete Mittelwert zählt kurze Aufenthalte gleich viel wie lange → Phase 2
+   **57,18 €** statt 58,07 €. Richtig ist immer
    `Umsatz ÷ Nächte` (gewichtet).
 2. **Storno zählt zum Umsatz, nicht zur Belegung.** B003 (127,43 €, 0 belegte Nächte)
-   hebt den ADR von Phase 2 um +1,13 € (56,23 → 57,36). Bewusst so – das Geld ist real.
+   hebt den ADR von Phase 2 um +0,90 € (57,17 → 58,07). Bewusst so – das Geld ist real.
 3. **Nenner ist die Belegung (`Naechte_Belegt`), nicht `Naechte`.** Sonst zählt B037
-   (Verlängerung, 0 belegte Nächte) doppelt: 6.481,13 / 121 = 53,56 € statt 57,36 €.
+   (Verlängerung, 0 belegte Nächte) doppelt: 8.188,04 / 149 = 54,95 € statt 58,07 €.
 
 Zähler und Nenner sind hier beide **buchungsbasiert** (Phase über die Anreise) und damit
-in sich stimmig. Die *Auslastung* rechnet dagegen **tageweise** (111 statt 113 Nächte in
-Phase 2, weil B001 mit 2 Nächten über den 30.09. hinausragt) – die beiden Kennzahlen
-unterscheiden sich deshalb minimal, jede ist aber in ihrer eigenen Logik korrekt.
-Strikt fenstergenau wäre 6.481,13 / 111 = 58,39 € – das mischt aber Umsatz *mit*
-Überhang und Nächte *ohne* und ist deshalb nicht zu empfehlen.
+in sich stimmig. Die *Auslastung* rechnet dagegen **tageweise** – seit der Verlängerung
+des Fensters bis 31.10.2026 ergeben beide Zählungen für Phase 2 **141** Nächte, die
+Kennzahlen stimmen also exakt überein (früher ragte B001 mit 2 Nächten über den
+30.09. hinaus, die Auslastung zählte 111 statt 113).
 
 ```dax
 RevPAR = DIVIDE ( [Umsatz Netto], [Verfuegbare Naechte] )
@@ -363,12 +364,12 @@ Naechte Vormonat = CALCULATE ( [Naechte], DATEADD ( kalender[Date], -1, MONTH ) 
 
 ### Entwicklung zwischen den Phasen (Differenz-Maßzahlen)
 
-Für zwei Karten nebeneinander („Auslastung 68,6 % → 91,0 %", „ADR 56,71 € → 57,36 €").
+Für zwei Karten nebeneinander („Auslastung 68,6 % → 92,2 %", „ADR 56,71 € → 58,07 €").
 Beide Maßzahlen sind **fest verdrahtet** – jede Phase wird per `CALCULATE` selbst gesetzt,
 also zeigen sie in jeder Visualisierung denselben Wert und ignorieren Slicer.
 
 Einfachste Fassung – nur möglich, wenn die beiden Phasen-Maßzahlen schon existieren
-(`Auslastung % Phase 1` / `Auslastung % Phase 2`, die 68,6 % und 91,0 % zeigen):
+(`Auslastung % Phase 1` / `Auslastung % Phase 2`, die 68,6 % und 92,2 % zeigen):
 
 ```dax
 Auslastung % Differenz P2-P1 = [Auslastung % Phase 2] - [Auslastung % Phase 1]
@@ -385,7 +386,7 @@ Auslastung % Differenz P2-P1 =
 VAR P1 =
     CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 1 (Okt-Dez 2025)" )
 VAR P2 =
-    CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 2 (Mai-Sep 2026)" )
+    CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 2 (Mai-Okt 2026)" )
 RETURN
     P2 - P1
 ```
@@ -400,7 +401,7 @@ VAR P1 =
 VAR P2 =
     CALCULATE (
         DIVIDE ( SUM ( buchungen[Netto_Betrag] ), SUM ( buchungen[Naechte_Belegt] ) ),
-        buchungen[Betriebsphase] = "Phase 2 (Mai-Sep 2026)"
+        buchungen[Betriebsphase] = "Phase 2 (Mai-Okt 2026)"
     )
 RETURN
     P2 - P1
@@ -413,7 +414,7 @@ Auslastung % Veraenderung P2-P1 =
 VAR P1 =
     CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 1 (Okt-Dez 2025)" )
 VAR P2 =
-    CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 2 (Mai-Sep 2026)" )
+    CALCULATE ( [Auslastung %], kalender[Betriebsphase] = "Phase 2 (Mai-Okt 2026)" )
 RETURN
     DIVIDE ( P2, P1 ) - 1
 ```
@@ -428,7 +429,7 @@ VAR P1 =
 VAR P2 =
     CALCULATE (
         DIVIDE ( SUM ( buchungen[Netto_Betrag] ), SUM ( buchungen[Naechte_Belegt] ) ),
-        buchungen[Betriebsphase] = "Phase 2 (Mai-Sep 2026)"
+        buchungen[Betriebsphase] = "Phase 2 (Mai-Okt 2026)"
     )
 RETURN
     DIVIDE ( P2, P1 ) - 1
@@ -438,19 +439,19 @@ Sollwerte:
 
 | Maßzahl | Ergebnis |
 | --- | --- |
-| `Auslastung % Differenz P2-P1` | **+22,4 Pp** (0,224) |
-| `Auslastung % Veraenderung P2-P1` | **+32,6 %** |
-| `ADR Differenz P2-P1` | **+0,65 €** |
-| `ADR Veraenderung P2-P1` | **+1,1 %** |
+| `Auslastung % Differenz P2-P1` | **+23,5 Pp** (0,235) |
+| `Auslastung % Veraenderung P2-P1` | **+34,3 %** |
+| `ADR Differenz P2-P1` | **+1,36 €** |
+| `ADR Veraenderung P2-P1` | **+2,4 %** |
 
 **Fallen**
 
-1. **Prozentpunkt ≠ Prozent.** Die Auslastungs-Differenz ist 0,224 – als Prozent formatiert
+1. **Prozentpunkt ≠ Prozent.** Die Auslastungs-Differenz ist 0,235 – als Prozent formatiert
    steht dort „22,4 %". Wer das als relative Steigerung liest, liegt um Faktor 1,5 daneben
-   (richtig: +32,6 %). Für eindeutige Beschriftung ein benutzerdefiniertes Format setzen:
+   (richtig: +34,3 %). Für eindeutige Beschriftung ein benutzerdefiniertes Format setzen:
    `+0,0" Pp";-0,0" Pp"`.
 2. **Die ADR-Differenz nie über `AVERAGE ( buchungen[ADR_Netto] )` bilden** – ungewichtet
-   ergibt das 59,19 € / 56,20 € und damit **−2,99 €** statt der richtigen **+0,65 €**.
+   ergibt das 59,19 € / 57,18 € und damit **−2,01 €** statt der richtigen **+1,36 €**.
 3. **`[Auslastung %]` muss existieren.** Fehlt sie, dieselbe Rechnung abhängigkeitsfrei
    schreiben: Zähler `CALCULATE ( COUNTROWS ( kalender ), kalender[Belegt] = "ja" )`,
    Nenner `CALCULATE ( COUNTROWS ( kalender ), kalender[Verfuegbar] = "ja" )` – in beiden
@@ -534,7 +535,7 @@ RETURN
 **Farbe** → **fx** → Formatstil **Feldwert** → Feld `… Delta Farbe`. In Matrix/Tabelle
 stattdessen **Zellen-Elemente → Schriftfarbe → fx**.
 
-Ergebnis: `▲ 22,4 Pp` in Grün bzw. `▲ 0,65 €` in Grün – bei negativer Entwicklung
+Ergebnis: `▲ 23,5 Pp` in Grün bzw. `▲ 1,36 €` in Grün – bei negativer Entwicklung
 entsprechend `▼` in Rot.
 
 **Hinweise**
@@ -572,7 +573,7 @@ Airbnb hat zwischen den Phasen das Gebührenmodell umgestellt.
 | Phase | Modell | Host-Gebühr | Gästegebühr |
 | --- | --- | --- | --- |
 | 1 (Okt–Dez 2025) | Split Fee | 3 % + MwSt. = **3,57 %** | **14,1–16,5 %**, im Checkout sichtbar ¹ |
-| 2 (Mai–Sep 2026) | Host-Only Fee | 15,5 % + MwSt. = **18,45 %** | 0 % – im Preis enthalten |
+| 2 (Mai–Okt 2026) | Host-Only Fee | 15,5 % + MwSt. = **18,45 %** | 0 % – im Preis enthalten |
 
 Daraus folgen **drei Preisebenen**, die nicht dasselbe sind:
 
@@ -609,10 +610,10 @@ Daraus folgen **drei Preisebenen**, die nicht dasselbe sind:
 **Warum die Preiserhöhung nötig war.**
 Damit dieselbe *Auszahlung* herauskommt, muss der Listenpreis mit
 `(1 − 3,57 %) / (1 − 18,45 %) = 1,183` multipliziert werden → **+18,3 %**.
-Tatsächlich gestiegen: **+19,6 %**. Die Auszahlung je Nacht blieb dadurch
-praktisch konstant (56,71 € → 57,36 €). Die Erhöhung war also **richtig
-bemessen**: sie hat genau die Gebühr kompensiert und den Netto-Preis stabil
-gehalten – mehr aber auch nicht.
+Tatsächlich gestiegen: **+21,1 %** (58,81 € → 71,21 € Listenpreis je Nacht). Die
+Auszahlung je Nacht blieb dadurch praktisch konstant (56,71 € → 58,07 €). Die
+Erhöhung war also **richtig bemessen** (mit etwas Luft): sie kompensiert die
+Gebühr und hält den Netto-Preis stabil.
 
 ```dax
 Listenpreis je Nacht = DIVIDE ( [Umsatz Brutto], [Belegte Naechte] )

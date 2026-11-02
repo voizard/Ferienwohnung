@@ -7,7 +7,7 @@ Quelle der beiden Flags und der Phasenzuordnung ist kalender_tagesbasis.csv
 7 Spalten und bekommt drei dazu -> Drop-in fuer das Power-BI-Modell,
 Der Host muss nur aktualisieren.
 
-Ergebnis: kalender.csv mit 10 Spalten, 345 Zeilen (2025-10-24 .. 2026-10-03).
+Ergebnis: kalender.csv mit 10 Spalten, 374 Zeilen (2025-10-24 .. 2026-11-01).
 """
 import csv
 import os

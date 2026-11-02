@@ -4,10 +4,11 @@
 > Auslastung, Preisstrategie und Buchungsverhalten über zwei Vermietungsphasen.
 
 **In short (EN):** End-to-end analysis of my own short-term rental business –
-Airbnb revenue export → Python preparation → Power BI star schema. 44 bookings,
-148 nights, €8,466 net revenue across two operating phases. Occupancy rose from
-**68.6 % to 91.0 %**, while the net price per night stayed flat (€56.71 → €57.36)
-– the revenue came from occupancy, not price (RevPAR +37 %). The data work is
+Airbnb revenue export → Python preparation → Power BI star schema. 53 bookings,
+176 nights, €10,173 net revenue across two operating phases. Occupancy rose from
+**68.6 % to 92.2 %**, while the net price per night stayed nearly flat
+(€56.71 → €58.07) – the revenue came from occupancy, not price (RevPAR +38 %).
+The data work is
 the interesting part: mixed decimal separators in one export, payout rows that
 mirror bookings, a double-counted occupancy bug, a cancellation that produced
 revenue without nights, and Airbnb's fee-model switch that changed what
@@ -19,14 +20,14 @@ revenue without nights, and Airbnb's fee-model switch that changed what
 ## Worum es geht
 
 Ich betreibe eine Ferienwohnung mit Kurzzeitvermietung – in zwei Betriebsphasen
-(**Okt–Dez 2025** und **Mai–Sep 2026**), davor und dazwischen Renovierung.
+(**Okt–Dez 2025** und **Mai–Okt 2026**), davor und dazwischen Renovierung.
 Für dieses Projekt habe ich die Buchungsdaten aus dem Airbnb-Einnahmen-Export
 aufbereitet und in Power BI ausgewertet, mit dem Ziel, die Preisstrategie
 datenbasiert zu steuern.
 
 **Rolle:** Datenaufbereitung, Modellierung, DAX, Report-Design (allein)
 **Werkzeuge:** Power BI Desktop, Power Query, DAX, Python (Datenaufbereitung)
-**Datenbasis:** 44 Buchungen · 148 belegte Nächte · 8.465,94 € Netto-Umsatz
+**Datenbasis:** 53 Buchungen · 176 belegte Nächte · 10.172,85 € Netto-Umsatz
 
 ## Fragestellungen
 
@@ -46,7 +47,7 @@ Star Schema:
 
 | Tabelle | Typ | Inhalt |
 | --- | --- | --- |
-| `buchungen` | Fakt | 44 Zeilen: Anreise, Abreise, Nächte, Netto-Betrag, Gebühr, Vorlauf |
+| `buchungen` | Fakt | 53 Zeilen: Anreise, Abreise, Nächte, Netto-Betrag, Gebühr, Vorlauf |
 | `anpassungen` | Fakt | 1 Airbnb-Anpassung/Mediation |
 | `kalender` | Dimension | Datumstabelle, als Datumstabelle markiert |
 | `betriebsphasen` | Dimension | Buchbarkeitsfenster je Phase – steuert die Auslastung |
@@ -56,19 +57,19 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 
 ## Kennzahlen
 
-| Kennzahl | Phase 1 (Okt–Dez 2025) | Phase 2 (Mai–Sep 2026) |
+| Kennzahl | Phase 1 (Okt–Dez 2025) | Phase 2 (Mai–Okt 2026) |
 | --- | --- | --- |
-| Buchungen | 7 | 37 |
-| Belegte Nächte | 35 | 113 |
-| Umsatz netto | 1.984,81 € | 6.481,13 € |
-| **ADR netto** (Ø €/belegte Nacht) | 56,71 € | 57,36 € |
-| **Brutto-Preis** (Ø € vor Gebühr) | 58,81 € | 70,33 € |
-| **RevPAR netto** (Ø €/verfügbare Nacht) | 38,92 € | 53,12 € |
-| Auslastung | 68,6 % | 91,0 % |
-| Ø Aufenthalt | 5,0 Nächte | 3,1 Nächte |
+| Buchungen | 7 | 46 |
+| Belegte Nächte | 35 | 141 |
+| Umsatz netto | 1.984,81 € | 8.188,04 € |
+| **ADR netto** (Ø €/belegte Nacht) | 56,71 € | 58,07 € |
+| **Brutto-Preis** (Ø € vor Gebühr) | 58,81 € | 71,21 € |
+| **RevPAR netto** (Ø €/verfügbare Nacht) | 38,92 € | 53,52 € |
+| Auslastung | 68,6 % | 92,2 % |
+| Ø Aufenthalt | 5,0 Nächte | 3,2 Nächte |
 | Servicegebühr-Quote | 3,6 % | 18,4 % |
 
-> Auslastung = belegte Nächte im Buchbarkeitsfenster. Phase 1 war **24.10.–13.12.2025** buchbar (51 Tage; letzte Nacht 13.12., Abreise des letzten Gastes 14.12.2025), Phase 2 **22.05.–30.09.2026** (132 Tage − 10 gesperrte = 122 verfügbare Nächte).
+> Auslastung = belegte Nächte im Buchbarkeitsfenster. Phase 1 war **24.10.–13.12.2025** buchbar (51 Tage; letzte Nacht 13.12., Abreise des letzten Gastes 14.12.2025), Phase 2 **22.05.–31.10.2026** (163 Tage − 10 gesperrte = 153 verfügbare Nächte; der Betrieb lief ohne Saisonbruch in den Herbst weiter, letzte belegte Nacht 31.10., Abreise 01.11.2026).
 
 Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
 
@@ -85,21 +86,21 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 
 - **Der Umsatz kam über die Auslastung, nicht über den Preis.**
   Der Netto-Preis je belegter Nacht blieb praktisch unverändert
-  (56,71 € → 57,36 €, +1 %), während die Auslastung von **69 % auf 91 %** stieg.
-  Der Umsatz je *verfügbarer* Nacht (RevPAR) stieg dadurch um **+37 %**
-  (38,92 € → 53,12 €). ADR allein hätte das nicht gezeigt.
+  (56,71 € → 58,07 €, +2 %), während die Auslastung von **69 % auf 92 %** stieg.
+  Der Umsatz je *verfügbarer* Nacht (RevPAR) stieg dadurch um **+38 %**
+  (38,92 € → 53,52 €). ADR allein hätte das nicht gezeigt.
 
 - **Airbnb hat das Gebührenmodell umgestellt – und damit die Preislogik.**
   Phase 1 (Split Fee): du zahlst **3,57 %**, der Gast zahlt ~14 % obendrauf und
   sieht die Gebühr im Checkout. Phase 2 (Host-Only Fee): du zahlst
   **15,5 % + MwSt. = 18,45 %**, der Gast sieht nur noch eine Zahl ohne Aufschlag.
   Folge: Um dieselbe Auszahlung zu halten, musste der Listenpreis um
-  **18,3 %** steigen – er stieg um **19,6 %**. Die Erhöhung war also **genau
-  richtig bemessen**: sie kompensiert exakt die Gebühr. Die Auszahlung je Nacht
-  blieb praktisch konstant (56,71 € → 57,36 €).
+  **18,3 %** steigen – er stieg um **21,1 %**. Die Erhöhung war also **richtig
+  bemessen** (mit etwas Luft): sie kompensiert die Gebühr. Die Auszahlung je
+  Nacht blieb praktisch konstant (56,71 € → 58,07 €).
   **Handlungsableitung:** Der Preisspielraum ist strukturell enger geworden –
   jede künftige Netto-Erhöhung um 1 € verlangt 1,23 € mehr Listenpreis
-  (vorher 1,04 €). Bei 91 % Auslastung ist der Nachfrage-Raum da, um den
+  (vorher 1,04 €). Bei 92 % Auslastung ist der Nachfrage-Raum da, um den
   *Netto*-Preis jetzt aktiv zu erhöhen statt nur die Gebühr zu kompensieren.
   **Wichtig für die Interpretation:** Der Gast sah in Phase 1 mehr als den
   Listenpreis (nämlich + seine Gebühr). Ein reiner Brutto-Vergleich über die
@@ -114,7 +115,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
   in zwei Spalten** statt nur eine Betragssumme zu bilden.
 
 - **Ein Storno kann Umsatz ohne Belegung sein.** Eine Buchung wurde storniert,
-  aber trotzdem ausgezahlt (Same-Day-Storno): **127,43 €**, knapp 2 % des Umsatzes
+  aber trotzdem ausgezahlt (Same-Day-Storno): **127,43 €**, knapp 1,6 % des Umsatzes
   in Phase 2 – bei **null belegten Nächten**. Wer so etwas ungeprüft als Belegung
   zählt, verschlechtert Auslastung und ADR gleichermaßen.
 
@@ -123,17 +124,17 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
   der Endpreis des Gastes. Verglichen wird deshalb auf der **Auszahlung (netto)**
   für die eigene Wirtschaftlichkeit und auf dem **Endpreis** für die Gästesicht.
 
-- **Anreisen konzentrieren sich auf Donnerstag bis Sonntag** (68 % aller
-  Check-ins; Freitag mit 14 Buchungen am stärksten) – das bestätigt die
+- **Anreisen konzentrieren sich auf Donnerstag bis Sonntag** (66 % aller
+  Check-ins; Freitag mit 15 Buchungen am stärksten) – das bestätigt die
   Wochenend-Nachfrage und erklärt die Preissetzung.
 
-- **Der Buchungsvorlauf liegt im Schnitt bei 18,9 Tagen** (Median 14,
-  Spanne 1–64 Tage) – ein Fenster, in dem dynamische Preise wirken können.
+- **Der Buchungsvorlauf liegt im Schnitt bei 18,9 Tagen** (Median 16,
+  Spanne 0–64 Tage) – ein Fenster, in dem dynamische Preise wirken können.
 
 ## Offengelegte Einschränkungen
 
 - **Keine saisonale Aussage.** Zwei Phasen ergeben kein Jahr; Phase 1
-  (Herbst/Winter) und Phase 2 (Sommer) unterscheiden sich **saisonal**.
+  (Herbst/Winter) und Phase 2 (Sommer/Herbst) unterscheiden sich **saisonal**.
   Der Phasenvergleich ist damit **nicht kausal**: Renovierung und Jahreszeit
   wirken gleichzeitig. Diese Verwechslungsgefahr wird bewusst benannt und im
   Report gezeigt, statt sie zu verschweigen.
@@ -146,7 +147,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - **Gesperrte Nächte sind nur teilweise bekannt.** Für Phase 2 ist ein Block
   dokumentiert – **07.–16.08.2026, 10 Nächte** (Eigennutzung/Instandhaltung) –
   und aus dem Nenner der Auslastung entfernt. Ohne ihn läge die Auslastung
-  fälschlich bei 84,1 % statt 91,0 %. Weitere Sperren (z. B. in Phase 1) sind
+  fälschlich bei 86,5 % statt 92,2 %. Weitere Sperren (z. B. in Phase 1) sind
   nicht erfasst; dort ist die Auslastung eine **Obergrenze**.
 - Der Datensatz enthält **keine personenbezogenen Gästedaten**. Die
   Details-Spalte des Exports (Zahlungsadresse) wurde beim Aufbereiten verworfen.
@@ -167,7 +168,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 
 - `daten/buchungen.csv` – aufbereitete Buchungen (import-fertig)
 - `daten/anpassungen.csv` – Airbnb-Anpassungen
-- `daten/kalender.csv` – Datumstabelle (345 Tage, 10 Spalten)
+- `daten/kalender.csv` – Datumstabelle (374 Tage, 10 Spalten)
 - `daten/kalender_tagesbasis.csv` – Zwischenstand der Tages-Tabelle
 - `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle vier Tabellen als Excel-Datei
 - `daten/datadictionary.md` – Spalten, Typen, bekannte Fallen
