@@ -15,7 +15,7 @@ revenue without nights, and Airbnb's fee-model switch that changed what
 "price" means. All measures documented in [`dax/measures.md`](dax/measures.md).
 
 <!-- Screenshot der Startseite -->
-![Übersicht](screenshots/01_overview.png?v=2)
+![Übersicht](screenshots/01_overview.png?v=3)
 
 ## Worum es geht
 
