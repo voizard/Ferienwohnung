@@ -80,6 +80,11 @@ Spalten: `Datum`, `Jahr`, `Quartal`, `Monat`, `Monatsname`, `Kalenderwoche`,
 `Wochentag`, **`Betriebsphase`**, **`Verfuegbar`** (ja/nein), **`Belegt`** (ja/nein)
 – 10 Spalten, 374 Zeilen. **Als Datumstabelle markieren** (Spalte `Datum`).
 
+`Monatsname` und `Wochentag` sind **deutsch** (`Oktober`, `Donnerstag`)
+– festgelegt 02.11.2026. Auch `buchungen[Anreisetag_Wochentag]` ist deutsch.
+Die Werte kommen aus `MONATSNAME`/`WOCHENTAG` in `build_kalender_tagesbasis.py`
+und `build_datasets.py`, nicht aus `strftime` (das liefert englische Namen).
+
 Tage außerhalb der Buchbarkeitsfenster tragen die Phase
 `Zwischenzeit (nicht buchbar)` mit `Verfuegbar = nein`. Erzeugt von
 `build_kalender_tagesbasis.py` + `add_flags_to_kalender.py`.

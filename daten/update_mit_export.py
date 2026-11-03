@@ -301,6 +301,21 @@ def main():
         print('Hinweis: kalender_tagesaktuell.csv mitaktualisiert (Abfrage im '
               'Power-BI-Modell). Sauber waere, in Power Query auf kalender.csv umzustellen.')
 
+    # kalender_flags.csv: schlanke Flags-Kopie (Datum,Verfuegbar,Belegt).
+    # Achtung (02.11.2026): Diese Datei endete frueher am 03.10.2026, wodurch
+    # im Power-BI-Merge der ganze Oktober leer blieb. Deshalb wird sie jetzt
+    # bei JEDEM Lauf aus kalender.csv neu erzeugt - volle Abdeckung.
+    flags = os.path.join(HIER, 'kalender_flags.csv')
+    if os.path.exists(flags):
+        with open(os.path.join(HIER, 'kalender.csv'), encoding='utf-8-sig') as fh:
+            kal = list(csv.DictReader(fh))
+        with open(flags, 'w', encoding='utf-8-sig', newline='') as fh:
+            w = csv.writer(fh)
+            w.writerow(['Datum', 'Verfuegbar', 'Belegt'])
+            for z in kal:
+                w.writerow([z['Datum'], z['Verfuegbar'], z['Belegt']])
+        print(f'kalender_flags.csv mitaktualisiert ({len(kal)} Zeilen).')
+
     print('\n--- Kennzahlen ---')
     zeige('vorher ', vorher)
     zeige('nachher', kennzahlen())

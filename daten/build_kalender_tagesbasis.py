@@ -44,9 +44,10 @@ START = min(p[1] for p in PHASEN)          # 2025-10-24
 # Nacht ist der 31.10.2026; der 01.11. ist nur Abreisetag und traegt als Tag
 # ausserhalb der Fenster 'Zwischenzeit (nicht buchbar)'.
 ENDE = datetime.date(2026, 11, 1)
-WOCHENTAG = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-MONATSNAME = ['January', 'February', 'March', 'April', 'May', 'June',
-              'July', 'August', 'September', 'October', 'November', 'December']
+# Deutsche Namen - der Datensatz ist durchgaengig deutsch (Chris, 02.11.2026).
+WOCHENTAG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+MONATSNAME = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+              'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
 
 
 def phase_von(tag):
@@ -102,7 +103,8 @@ def main():
         tag += datetime.timedelta(days=1)
 
     ziel = os.path.join(OUT, 'kalender_tagesbasis.csv')
-    with open(ziel, 'w', encoding='utf-8', newline='') as fh:
+    # utf-8-sig = mit BOM, wie kalender.csv/buchungen.csv (Chris' Vorgabe).
+    with open(ziel, 'w', encoding='utf-8-sig', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(zeilen[0].keys()))
         w.writeheader()
         w.writerows(zeilen)

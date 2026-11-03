@@ -34,14 +34,14 @@ os.makedirs(OUT, exist_ok=True)
 os.makedirs(FIGS, exist_ok=True)
 
 WOCHENTAG_DE = {
-    "Monday": "Mo", "Tuesday": "Di", "Wednesday": "Mi", "Thursday": "Do",
-    "Friday": "Fr", "Saturday": "Sa", "Sunday": "So",
+    "Montag": "Mo", "Dienstag": "Di", "Mittwoch": "Mi", "Donnerstag": "Do",
+    "Freitag": "Fr", "Samstag": "Sa", "Sonntag": "So",
 }
-WOCHENTAG_ORDER = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
-                   "Saturday", "Sunday"]
+WOCHENTAG_ORDER = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag",
+                   "Samstag", "Sonntag"]
 MONAT_DE = {1: "Jan", 2: "Feb", 3: "Mrz", 4: "Apr", 5: "Mai", 6: "Jun",
             7: "Jul", 8: "Aug", 9: "Sep", 10: "Okt", 11: "Nov", 12: "Dez"}
-WOCHENENDE_TAGE = ["Friday", "Saturday"]   # Freitag + Samstag = Hauptanreisetage
+WOCHENENDE_TAGE = ["Freitag", "Samstag"]   # Freitag + Samstag = Hauptanreisetage
 
 
 def de(v, n=1):
@@ -368,9 +368,9 @@ niedrig.
 
 {md_auslastung_tabelle(wd)}
 
-Freitag und Samstag liegen bei {de(wd.loc['Friday','quote']*100, 0)} % bzw.
-{de(wd.loc['Saturday','quote']*100, 0)} %, Montag und Donnerstag nur bei
-{de(wd.loc['Monday','quote']*100, 0)} % / {de(wd.loc['Thursday','quote']*100, 0)} %.
+Freitag und Samstag liegen bei {de(wd.loc['Freitag','quote']*100, 0)} % bzw.
+{de(wd.loc['Samstag','quote']*100, 0)} %, Montag und Donnerstag nur bei
+{de(wd.loc['Montag','quote']*100, 0)} % / {de(wd.loc['Donnerstag','quote']*100, 0)} %.
 Das ist der deutlichste Einzelunterschied im Datensatz.
 
 ### Nach Betriebsphase
@@ -462,10 +462,10 @@ Preis je Nacht.
 ## 5 · Was das praktisch heißt
 
 - **Wochenenden tragen die Nachfrage.** Freitag/Samstag sind praktisch
-  ausgebucht ({de(wd.loc['Friday','quote']*100, 0)} % / {de(wd.loc['Saturday','quote']*100, 0)} %).
+  ausgebucht ({de(wd.loc['Freitag','quote']*100, 0)} % / {de(wd.loc['Samstag','quote']*100, 0)} %).
   Wer Erlös steigern will, hebt den **Wochenendpreis**, nicht den Grundpreis.
 - **Montag und Donnerstag sind die schwächsten Tage**
-  ({de(wd.loc['Monday','quote']*100, 0)} % / {de(wd.loc['Thursday','quote']*100, 0)} %).
+  ({de(wd.loc['Montag','quote']*100, 0)} % / {de(wd.loc['Donnerstag','quote']*100, 0)} %).
   Dort ist ein Rabatt oder eine Mindestaufenthaltslockerung wirksamer als
   eine allgemeine Preissenkung.
 - **{de(anteil_kurz*100, 0)} % der Buchungen sind ≤ 3 Nächte**, Median

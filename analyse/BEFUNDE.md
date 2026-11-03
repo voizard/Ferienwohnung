@@ -27,13 +27,13 @@ niedrig.
 
 | Wochentag | belegte Tage | buchbare Tage | Auslastung |
 | --- | --- | --- | --- |
-| Monday | 22 | 29 | 75,9 % |
-| Tuesday | 24 | 29 | 82,8 % |
-| Wednesday | 25 | 29 | 86,2 % |
-| Thursday | 24 | 29 | 82,8 % |
-| Friday | 29 | 30 | 96,7 % |
-| Saturday | 29 | 30 | 96,7 % |
-| Sunday | 23 | 28 | 82,1 % |
+| Montag | 22 | 29 | 75,9 % |
+| Dienstag | 24 | 29 | 82,8 % |
+| Mittwoch | 25 | 29 | 86,2 % |
+| Donnerstag | 24 | 29 | 82,8 % |
+| Freitag | 29 | 30 | 96,7 % |
+| Samstag | 29 | 30 | 96,7 % |
+| Sonntag | 23 | 28 | 82,1 % |
 
 Freitag und Samstag liegen bei 97 % bzw.
 97 %, Montag und Donnerstag nur bei

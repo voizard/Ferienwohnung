@@ -57,6 +57,11 @@ BLOCKIERT = {
     'Phase 2 (Mai-Okt 2026)': [(datetime.date(2026, 8, 7), datetime.date(2026, 8, 16))],
 }
 
+# Deutsche Namen (Chris, 02.11.2026): der Datensatz ist durchgaengig deutsch.
+MONATSNAME = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+              'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+WOCHENTAG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag']
+
 
 def num(s):
     """Zahl aus Airbnb-Export: gemischte Dezimaltrenner (300.93 vs 68,07)."""
@@ -162,7 +167,7 @@ for i, r in enumerate(buch, 1):
         'Ueberlappung': 'ja' if s in doppel else '',
         'Belegung_Hinweis': hinweis,
         'Vorlauf_Tage': (an - bd).days if (an and bd) else '',
-        'Anreisetag_Wochentag': an.strftime('%A') if an else '',
+        'Anreisetag_Wochentag': WOCHENTAG[an.weekday()] if an else '',
         'Jahr': an.year if an else '',
         'Monat': an.month if an else '',
     })
@@ -199,7 +204,7 @@ with open(f'{OUT}/kalender.csv', 'w', encoding='utf-8-sig', newline='') as fh:
     while d <= end:
         n += 1
         w.writerow([d.isoformat(), d.year, (d.month - 1) // 3 + 1, d.month,
-                    d.strftime('%B'), d.isocalendar()[1], d.strftime('%A')])
+                    MONATSNAME[d.month - 1], d.isocalendar()[1], WOCHENTAG[d.weekday()]])
         d += datetime.timedelta(days=1)
 print(f'kalender.csv: {n} Zeilen ({start} bis {end})')
 

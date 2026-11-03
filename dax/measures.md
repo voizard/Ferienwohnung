@@ -20,9 +20,9 @@ kalender =
             "Jahr", YEAR ( [Date] ),
             "Quartal", QUARTER ( [Date] ),
             "Monat", MONTH ( [Date] ),
-            "Monatsname", FORMAT ( [Date], "MMM" ),
+            "Monatsname", FORMAT ( [Date], "MMM" ),   -- deutsch, wenn Modell-Locale de-DE
             "Kalenderwoche", WEEKNUM ( [Date], 2 ),
-            "Wochentag", FORMAT ( [Date], "ddd" )
+            "Wochentag", FORMAT ( [Date], "ddd" )        -- deutsch, wenn Modell-Locale de-DE
         )
 ```
 
@@ -47,7 +47,7 @@ exakt denselben Zeitraum wie die `kalender`-Tabelle ab – sie lässt sich also
 | Spalte | Inhalt |
 | --- | --- |
 | `Datum` | Tagesdatum |
-| `Jahr` / `Quartal` / `Monat` / `Monatsname` / `Kalenderwoche` / `Wochentag` | Zeitattribute |
+| `Jahr` / `Quartal` / `Monat` / `Monatsname` / `Kalenderwoche` / `Wochentag` | Zeitattribute (deutsch: `Oktober`, `Donnerstag`) |
 | `Betriebsphase` | Phasenname oder `Zwischenzeit (nicht buchbar)` |
 | `Verfuegbar` | `ja`/`nein` – Tag liegt im Buchbarkeitsfenster und ist nicht gesperrt |
 | `Belegt` | `ja`/`nein` – ein Aufenthalt (ohne Storno) überdeckt den Tag |
