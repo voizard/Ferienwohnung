@@ -849,8 +849,25 @@ Seite da und sparen jede Rechnung:
 | Spalte | Zweck |
 | --- | --- |
 | `Ist_Auslastung_Pct` | Deine heutige Auslastung je Basis (gesamt 86,27). Der Vergleichswert. |
-| `Ampel` | `gruen` / `rot` / `referenz` – fertig zum Einfärben, ohne Formel. |
-| `Hinweis` | Klartext „darf 9,1 % verlieren" bzw. „braucht 11,1 % mehr". |
+| `Ampel` | `gruen` / `rot` / `unmoeglich` / `referenz` – fertig zum Einfärben, ohne Formel. |
+| `Hinweis` | Klartext „darf 9,1 % verlieren" bzw. „braucht 11,1 % mehr" bzw. „unerreichbar – nur 1 Nacht frei". |
+| `Zeilenfarbe` | Hex-Wert **nur** in der Referenzzeile (`#E8EEF4`), sonst leer. Treibt die Zeilen-Hervorhebung über *Feldwert*. |
+
+**Die vier Kategorien der Ampel** – wichtig für das Verständnis der
+Break-even-Spalte:
+
+| Ampel | Bedeutung |
+| --- | --- |
+| `gruen` | Break-even-Auslastung ≤ Ist-Auslastung: die Preiserhöhung trägt, man darf Nachfrage verlieren. |
+| `rot` | Break-even-Auslastung über der Ist-Auslastung, aber **noch unter 100 %**: die Nachfrage müsste steigen – sie kann es, es sind Nächte frei. |
+| `unmoeglich` | Break-even-Auslastung **über 100 %**: die nötigen Nächte gibt es gar nicht. Die Preissenkung ist nicht kompensierbar – egal, wie gut die Nachfrage wäre. |
+| `referenz` | Der heutige Preis (`Preis_Delta_Pct = 0`). Anker der Tabelle. |
+
+> **Warum `unmoeglich` eine eigene Farbe braucht (Chris, 03.11.2026):**
+> Reduziert man den Preis um 3 %, braucht man rechnerisch **101 %** Auslastung
+> – also mehr Nächte, als überhaupt buchbar sind. Vorher stand das als „rot"
+> („braucht 3 % mehr"), was aussieht, als wäre es mit etwas Glück erreichbar.
+> Ist es nicht. `unmoeglich` sagt das direkt.
 
 Filter `Basis = gesamt` in den Filterbereich der Tabelle ziehen (die Datei
 enthält gesamt + beide Phasen in einer Tabelle).
@@ -875,17 +892,176 @@ enthält gesamt + beide Phasen in einer Tabelle).
    `Break_even_Auslastung_Pct` anklicken → *Formatieren* → *Zellenlemente* →
    *Hintergrundfarbe* → **Regeln (Fx)** → Feld `Ampel`,
    „Text enthält `gruen`" → Grün `#E3F2E1`, „Text enthält `rot`" → Rot
-   `#FBE3E3`, „Text enthält `referenz`" → Grau `#F0F0F0`.
-   Schriftfarbe passend dunkel: `#1B5E20` / `#B71C1C` / `#333333`.
-6. **Referenzzeile hervorheben:** die Zeile `0,00` über `Hinweis =`
-   „Referenz" findest du über die Sortierung in der Mitte. Optional die Zeile
-   über *Bedingte Formatierung → Schriftfarbe* fett setzen.
+   `#FBE3E3`, „Text enthält `unmoeglich`" → Dunkelrot `#F4CCCC`,
+   „Text enthält `referenz`" → Grau `#F0F0F0`.
+   Schriftfarbe passend dunkel: `#1B5E20` / `#B71C1C` / `#8B1A1A` / `#333333`.
+
+   **Reihenfolge der Regeln beachten!** Power BI prüft von oben nach unten.
+   Die Regel für `unmoeglich` muss **vor** der Regel für `rot` stehen – sonst
+   greift „Text enthält rot" nie, weil `unmoeglich` kein „rot" enthält, aber
+   umgekehrt bei falscher Reihenfolge die falsche Farbe gewinnt.
+6. **Referenzzeile optisch hervorheben** (die Zeile `Preis_Delta_Pct = 0,00` /
+   `Ampel = referenz`). Power BI kann *einzelne Zeilen* nicht per Klick
+   markieren – eine Zeile ist keine „Zelle". Deshalb bringt die Tabelle eine
+   fertige Spalte **`Zeilenfarbe`** mit: sie enthält nur in der Referenzzeile
+   einen Hex-Wert (`#E8EEF4`), sonst leer. Damit ist es **ein** Dialog je
+   Spalte, kein Regelwerk:
+
+   **So geht's (je Spalte, ca. 5 Sekunden):**
+   a. Spalte anklicken (z. B. `Preis_je_Nacht_EUR`) → *Formatieren* →
+      *Zellenlemente* → *Hintergrundfarbe* → **Bedingte Formatierung** →
+      **Formatstil = Feldwert** → *Worauf soll dies basieren?* = **`Zeilenfarbe`**
+      → *OK*. Die Zelle wird jetzt nur in der 0-%-Zeile eingefärbt.
+   b. Wiederholen für die Spalten `Preis_Delta_Pct`, `Umsatz_Konstant_EUR`,
+      `Break_even_Auslastung_Pct`, `Hinweis` → die **ganze Zeile** ist grau.
+      (Das sind 5 Dialoge, fertig.)
+
+   **Wichtig – `Break_even_Auslastung_Pct` bekommt zwei Regeln:** erst die
+   Ampel-Farben aus Schritt 5, **darunter** die `Zeilenfarbe`-Regel. Sonst
+   überstimmt die Zellenfarbe die Zeilenfarbe.
+
+   **Noch deutlicher (Akzent-Rahmen):** Spalte `Ampel` → *Zellenlemente* →
+   *Rahmen* → **Bedingte Formatierung** → Feldwert `Ampel` → nur bei
+   `referenz` Rahmen an, Farbe `#1F4E79`, Breite 2 px. Zusammen mit der
+   Füllung sieht die Zeile aus wie im Bild.
+
+   **Warum die Füllung in *jeder* Spalte gesetzt werden muss:** `Zeilenfarbe`
+   ist ein normaler Spaltenwert. Jede Spalte, die per *Feldwert* darauf
+   verweist, färbt **ihre eigene** Zelle – daraus entsteht die Zeilenfüllung
+   ohne DAX und ohne Regel-Priorisierung. Setzt man die Regel nur auf eine
+   Spalte, ist auch nur diese eine Zelle grau.
+
+   **Wichtig:** *Fett* geht nur **ganz spaltig** (Formatieren → *Werte* →
+   Schriftart **Fett**), nie nur für die eine Zeile. Deshalb trägt die
+   Referenzzeile die Hervorhebung über **Füllung + Rahmen**, nicht über
+   Fettschrift.
+
+   **Alternative ohne die Spalte:** statt *Feldwert* den Formatstil
+   **Regeln (Fx)** auf Feld `Ampel` nehmen – „Text enthält `referenz`" →
+   Grau `#E8EEF4`. Funktioniert genauso, braucht aber je Spalte eine Regel.
+
+   Sortierreihenfolge: *Sortieren nach* `Preis_Delta_Pct` aufsteigend, dann
+   steht die Referenzzeile in der Mitte (−30 … 0 … +30).
 7. **Fußzeile:** Textfeld einfügen, Inhalt = Ehrlichkeitshinweis aus 8.5.
 
 ### 8B.3 Optional: Datenbalken im Umsatz
 
 Spalte `Umsatz_Konstant_EUR` → *Formatieren* → *Zellenlemente* →
 *Datenbalken* → Farbe `#CFE2F3`. Kein zweites Diagramm nötig.
+
+### 8B.4 Spaltenabstand einstellen (Chris, 03.11.2026)
+
+Ein reines „Abstand zwischen den Spalten" gibt es in der Tabelle nicht –
+der Weißraum entsteht über die **Spaltenbreite**:
+
+1. Spaltenkopf der Spalte anklicken → *Formatieren* → **Layout** →
+   *Spaltenbreite* → **Auto-Size-Verhalten**:
+   - **An Inhalt anpassen** (Standard): so breit wie nötig – eng, aber
+     kompakt.
+   - **Auf Größe erweitern**: verteilt die Restbreite gleichmäßig auf alle
+     Spalten – wirkt am aufgeräumtesten (mein Vorschlag für diese Seite).
+   - **Feste Breite**: feste Pixelbreite für alle Spalten.
+2. Feiner: *Benutzerdefinierte Breiten* einschalten → je Spalte ein
+   Pixelwert. Faustregel: Textspalten (`Hinweis`) breit (180–220 px),
+   Zahlenspalten schmal (90–120 px), `Preis_Delta_Pct` ~80 px.
+3. Schnell am Bildschirm: an den Spaltenkopf fahren, bis der
+   Ziehpfeil erscheint, dann ziehen. Rechtsklick auf den Kopf →
+   *Spaltenbreite festlegen* (px) bzw. *Spaltenbreite zurücksetzen*.
+4. Innenabstand der Zellen („Padding") ist nicht einstellbar – nur
+   Breite, Rahmen und Schriftgröße. Für mehr Luft: **Rasterlinien**
+   (Formatieren → *Raster*) auf hellgrau, das gliedert ohne echten Abstand.
+
+> Für die Mobile-Ansicht sind die Spaltenbreiten **separat** einstellbar
+> (Formatieren → Layout → Spaltenbreite, während die mobile Ansicht aktiv ist).
+
+### 8B.5 Monats-Tabelle: „sind aber viele" (Chris, 03.11.2026)
+
+`preisszenarien_monat` hat **9 Monate × 13 Preisschritte = 117 Zeilen**. Die
+Spalte `Basis` (Monat) gehört deshalb **nicht in die Spalten**, sondern in
+einen **Slicer** – dann steht immer nur *ein* Monat mit seinen 13 Zeilen da.
+
+**Sauberer Aufbau (mein Vorschlag):**
+
+1. `Basis` aus dem Bereich *Spalten* herausnehmen und **`Monat`** in einen
+   **Slicer** ziehen (Visualisierung → *Slicer* → Stil *Dropdown* oder
+   *Vertikale Liste*; Kachel nur, wenn es die Textspalte `Monat` ist).
+2. Im Slicer **einen Monat** wählen (z. B. `August 2026`) → die Tabelle zeigt
+   13 Zeilen, genau wie die Gesamt-Tabelle.
+3. Der Slicer steuert bei Bedarf **mehrere Kacheln** gleichzeitig – z. B.
+   Tabelle + „Auslastung je Monat" + KPI. Ein Slicer, alles folgt.
+4. Die Spalten `Monat_Datum`, `Belegte_Naechte`, `Verfuegbare_Naechte`,
+   `Teilmonat`, `Ist_Auslastung_Pct` sind Eckwerte/Helfer – nur einblenden,
+   wenn du sie wirklich brauchst.
+
+**Wenn mehrere Monate gleichzeitig sichtbar sein sollen**, gibt es zwei Wege:
+
+- **Schrittweite vergrößern:** nicht 13, sondern **7 Zeilen** (Δ −30, −20,
+  −10, 0, +10, +20, +30). Dafür eine zweite, kürzere Spalte in
+  `preisszenario.py` erzeugen (z. B. `Preis_Delta_Grob_Pct`) – dann zeigt
+  eine Zeile je Monat nur die 7 groben Schritte.
+- **Nur die Referenz + Nachbarwerte filtern:** Visual-Filter auf
+  `Preis_Delta_Pct` → *Erweitert* → „ist −10 oder 0 oder 10". Bleiben
+  3 Zeilen je Monat, 27 gesamt.
+- **Matrix statt Tabelle:** *Matrix*-Visual, `Basis` in **Zeilen**,
+  `Preis_Delta_Pct` in **Spalten**, `Break_even_Auslastung_Pct` als Wert.
+  Ergibt ein 9 × 13-Raster – kompakt, aber 117 Zellen bleiben 117 Zellen.
+  Für den Monatsvergleich ist meist **ADR + Auslastung je Monat**
+  (Liniendiagramm aus `auslastung_monat.csv`) das bessere Bild als 117 Zahlen.
+
+**Faustregel:** die Tabelle beantwortet *eine* Frage – „was passiert in
+diesem Monat, wenn ich den Preis ändere?". Ein Monat pro Blick, der Slicer
+wechselt den Monat.
+
+#### Fehlerbild 1: „Dropdown zeigt auch nur den 1. jedes Monats"
+
+**Ursache:** Power BI hat die Spalte `Basis` beim Import automatisch als
+**Datum** erkannt. Aus `2025-10` wird dann der **01.10.2025** – der Slicer
+zeigt 9 *Monatserste* statt 9 *Monatsnamen*, und die Datumsachse beschriftet
+mit „1. Oktober 2025".
+
+**Fix (die Spalten sind bereits in der Datei):**
+
+| Spalte | Inhalt | Wofür |
+| --- | --- | --- |
+| `Monat` | `Oktober 2025` (reiner Text) | **diesen im Slicer verwenden** |
+| `Monat_Sort` | `202510` (Zahl) | Sortierschlüssel – `Monat` danach sortieren |
+| `Monat_Datum` | `2025-10-31` (**letzter** Tag) | falls du doch eine echte Datumsachse brauchst |
+
+1. Slicer auf das Feld **`Monat`** umstellen (nicht `Basis`).
+2. Spalte `Monat` markieren → *Spaltentools* → **Nach Spalte sortieren** =
+   `Monat_Sort`. Dann steht Oktober vor November usw.
+3. `Basis` und `Monat_Sort` aus der Tabelle ausblenden (im Feldbereich das
+   Augensymbol) – sie sind nur Schlüssel.
+
+> **Warum `Monat_Datum` = Monatsletzter?** Der Erste und der Letzte liegen
+> im selben Monat, aber Power BI beschriftet eine Datumsachse mit dem
+> **letzten** Tag als „Oktober 2025" – mit dem Ersten stünde dort
+> verwirrend „1. Oktober".
+
+#### Fehlerbild 2: „bei Kachel kann ich nur den ersten eines Monats auswählen"
+
+Der **Kachel**-Stil unterstützt **keine Hierarchien** (nur eine Text- oder
+Zahlenspalte). Solange `Basis` als Datum gilt, baut Power BI daraus eine
+Jahr/Monat-Hierarchie – die Kachel zeigt dann nur die oberste Stufe.
+
+**Fix:** Kachel nur auf die **Textspalte `Monat`** legen (nach dem Fix oben).
+Dann zeigt die Kachel alle 9 Monate als Schaltflächen. Falls trotzdem nur
+wenige zu sehen sind: der Rest steckt hinter den **Scrollpfeilen** – das
+Visual breiter ziehen.
+
+#### Fehlerbild 3: „1. Oktober 2026 → 90 % Auslastung (falsch)"
+
+Das war ein **Rechenfehler**, nicht nur das Datumsformat: die erste Fassung
+hat die Buchungen nach **Anreisemonat** zugeordnet. Ein Aufenthalt
+28.09.–03.10. landete damit komplett im September – der Oktober bekam nur
+die Nächte der Gäste, die *im* Oktober angereist sind, und wirkte zu leer
+(90,3 % statt richtig **96,8 %**).
+
+**Korrigiert:** Nächte und Auslastung kommen jetzt aus `kalender.csv`
+(Tagesbasis) – eine Nacht zählt in den Monat, in dem sie **liegt**. Der
+Umsatz wird nach Kalendernächten auf die Monate verteilt. Kontrolle: die
+Monatssummen ergeben wieder **176/204 = 86,27 %** und **10.172,85 €** und
+decken sich exakt mit der Monatstabelle in `analyse/BEFUNDE.md`.
 
 > **Wenn die Seite später doch reagieren soll** (Regler „Preisänderung %",
 > Werte live): dann die Measures aus 8.1–8.6 anlegen und die Tabelle auf die

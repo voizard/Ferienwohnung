@@ -1,14 +1,14 @@
-﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct;Ist_Auslastung_Pct;Ampel;Hinweis
-Phase 2 (Mai-Okt 2026);-30,00;40,65;5731,63;-2456,41;-30,00;201,4;131,65;42,86;92,16;rot;braucht 42,9 % mehr
-Phase 2 (Mai-Okt 2026);-25,00;43,55;6141,03;-2047,01;-25,00;188,0;122,88;33,33;92,16;rot;braucht 33,3 % mehr
-Phase 2 (Mai-Okt 2026);-20,00;46,46;6550,43;-1637,61;-20,00;176,2;115,20;25,00;92,16;rot;braucht 25,0 % mehr
-Phase 2 (Mai-Okt 2026);-15,00;49,36;6959,83;-1228,21;-15,00;165,9;108,42;17,65;92,16;rot;braucht 17,6 % mehr
-Phase 2 (Mai-Okt 2026);-10,00;52,26;7369,24;-818,80;-10,00;156,7;102,40;11,11;92,16;rot;braucht 11,1 % mehr
-Phase 2 (Mai-Okt 2026);-5,00;55,17;7778,64;-409,40;-5,00;148,4;97,01;5,26;92,16;rot;braucht 5,3 % mehr
-Phase 2 (Mai-Okt 2026);0,00;58,07;8188,04;0,00;0,00;141,0;92,16;0,00;92,16;referenz;Referenz (heutiger Preis)
-Phase 2 (Mai-Okt 2026);5,00;60,97;8597,44;409,40;5,00;134,3;87,77;-4,76;92,16;gruen;darf 4,8 % verlieren
-Phase 2 (Mai-Okt 2026);10,00;63,88;9006,84;818,80;10,00;128,2;83,78;-9,09;92,16;gruen;darf 9,1 % verlieren
-Phase 2 (Mai-Okt 2026);15,00;66,78;9416,25;1228,21;15,00;122,6;80,14;-13,04;92,16;gruen;darf 13,0 % verlieren
-Phase 2 (Mai-Okt 2026);20,00;69,69;9825,65;1637,61;20,00;117,5;76,80;-16,67;92,16;gruen;darf 16,7 % verlieren
-Phase 2 (Mai-Okt 2026);25,00;72,59;10235,05;2047,01;25,00;112,8;73,73;-20,00;92,16;gruen;darf 20,0 % verlieren
-Phase 2 (Mai-Okt 2026);30,00;75,49;10644,45;2456,41;30,00;108,5;70,89;-23,08;92,16;gruen;darf 23,1 % verlieren
+﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct;Ist_Auslastung_Pct;Ampel;Hinweis;Zeilenfarbe
+Phase 2 (Mai-Okt 2026);-30,00;40,65;5731,63;-2456,41;-30,00;201,4;131,65;42,86;92,16;unmoeglich;unerreichbar - nur 12 Naechte frei;
+Phase 2 (Mai-Okt 2026);-25,00;43,55;6141,03;-2047,01;-25,00;188,0;122,88;33,33;92,16;unmoeglich;unerreichbar - nur 12 Naechte frei;
+Phase 2 (Mai-Okt 2026);-20,00;46,46;6550,43;-1637,61;-20,00;176,2;115,20;25,00;92,16;unmoeglich;unerreichbar - nur 12 Naechte frei;
+Phase 2 (Mai-Okt 2026);-15,00;49,36;6959,83;-1228,21;-15,00;165,9;108,42;17,65;92,16;unmoeglich;unerreichbar - nur 12 Naechte frei;
+Phase 2 (Mai-Okt 2026);-10,00;52,26;7369,24;-818,80;-10,00;156,7;102,40;11,11;92,16;unmoeglich;unerreichbar - nur 12 Naechte frei;
+Phase 2 (Mai-Okt 2026);-5,00;55,17;7778,64;-409,40;-5,00;148,4;97,01;5,26;92,16;rot;braucht 5,3 % mehr;
+Phase 2 (Mai-Okt 2026);0,00;58,07;8188,04;0,00;0,00;141,0;92,16;0,00;92,16;referenz;Referenz (heutiger Preis);#E8EEF4
+Phase 2 (Mai-Okt 2026);5,00;60,97;8597,44;409,40;5,00;134,3;87,77;-4,76;92,16;gruen;darf 4,8 % verlieren;
+Phase 2 (Mai-Okt 2026);10,00;63,88;9006,84;818,80;10,00;128,2;83,78;-9,09;92,16;gruen;darf 9,1 % verlieren;
+Phase 2 (Mai-Okt 2026);15,00;66,78;9416,25;1228,21;15,00;122,6;80,14;-13,04;92,16;gruen;darf 13,0 % verlieren;
+Phase 2 (Mai-Okt 2026);20,00;69,69;9825,65;1637,61;20,00;117,5;76,80;-16,67;92,16;gruen;darf 16,7 % verlieren;
+Phase 2 (Mai-Okt 2026);25,00;72,59;10235,05;2047,01;25,00;112,8;73,73;-20,00;92,16;gruen;darf 20,0 % verlieren;
+Phase 2 (Mai-Okt 2026);30,00;75,49;10644,45;2456,41;30,00;108,5;70,89;-23,08;92,16;gruen;darf 23,1 % verlieren;

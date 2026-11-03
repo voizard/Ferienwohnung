@@ -121,6 +121,36 @@ Tage außerhalb der Buchbarkeitsfenster tragen die Phase
 > vollständig ab (Fensterstart = Tabellenstart). Die frühere Fassung mit
 > Fensterstart 01.10.2025 ist überholt.
 
+### `preisszenarien.csv` / `preisszenarien_monat.csv` (Szenario-Tabellen)
+
+Erzeugt von `analyse/preisszenario.py` – **keine** Fakten, sondern eine fertige
+Break-even-Rechnung für die Report-Seite „Preis testen". Je Zeile ein Preis-
+schritt (−30 % … +30 %), je Basis (`gesamt`, `Phase 1`, `Phase 2`) bzw. je Monat.
+
+| Spalte | Typ | Beschreibung |
+| --- | --- | --- |
+| `Preis_Delta_Pct` | Zahl | Preisänderung in Prozentpunkten (−30 … +30) |
+| `Preis_je_Nacht_EUR` | Zahl | ADR × (1 + Delta) |
+| `Umsatz_Konstant_EUR` | Zahl | Umsatz, wenn die Auslastung **konstant** bleibt – reine Preiswirkung |
+| `Break_even_Naechte` | Zahl | heutiger Umsatz ÷ neuer Preis |
+| `Break_even_Auslastung_Pct` | Zahl | Break-even-Nächte ÷ verfügbare Nächte |
+| `Ist_Auslastung_Pct` | Zahl | heutige Auslastung – der Vergleichswert |
+| `Ampel` | Text | `gruen` / `rot` / `unmoeglich` / `referenz` |
+| `Hinweis` | Text | Klartext, z. B. „braucht 11,1 % mehr" |
+| `Zeilenfarbe` | Text | Hex nur in der Referenzzeile (`#E8EEF4`), sonst leer |
+
+Im Monats-Blatt zusätzlich: `Monat` (Text, für den Slicer), `Monat_Sort`
+(Sortierschlüssel), `Monat_Datum` (**letzter** Tag des Monats), `Belegte_Naechte`,
+`Verfuegbare_Naechte`, `Teilmonat`.
+
+**`Ampel` = `unmoeglich`:** Break-even-Auslastung über 100 % – die nötigen
+Nächte gibt es gar nicht, die Preissenkung ist nicht kompensierbar.
+
+**Monatszuordnung auf Tagesbasis:** Anders als bei `buchungen` (dort zählt der
+Anreisemonat) werden Nächte und Auslastung hier aus `kalender.csv` gezogen –
+eine Nacht zählt in den Monat, in dem sie **liegt**. Sonst landete ein Aufenthalt
+28.09.–03.10. komplett im September und der Oktober wäre zu leer.
+
 ## Bekannte Fallen im Rohdaten-Export
 
 **1. Gemischte Dezimaltrenner in einer Datei.**
@@ -202,7 +232,10 @@ bereits enthalten. Arbeitswert für Berechnungen: **15 %**.
 
 - **Verfügbare Nächte:** nur die Buchbarkeitsfenster der Phasen; Renovierungs-
   monate sind kein Bestandteil des Nenners.
-- **Buchungszuordnung:** Eine Buchung wird dem Monat ihrer **Anreise** zugerechnet.
+- **Buchungszuordnung:** In `buchungen.csv` wird eine Buchung dem Monat ihrer
+  **Anreise** zugerechnet (so zählt Airbnb selbst). Für die **Monats-Auslastung**
+  in `preisszenarien_monat.csv` gilt dagegen die **Tagesbasis** aus
+  `kalender.csv`: eine Nacht zählt in den Monat, in dem sie liegt.
 - **Beide Fenster sind bestätigt.** Phase 1: 24.10.–13.12.2025 (Stand 12.10.2026; der
   14.12.2025 ist nur der Abreisetag). Phase 2: 22.05.–31.10.2026 (Stand 02.11.2026; der
   01.11.2026 ist nur der Abreisetag). Ändert sich das Datum erneut, in `betriebsphasen`

@@ -1,14 +1,14 @@
-﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct;Ist_Auslastung_Pct;Ampel;Hinweis
-gesamt;-30,00;40,46;7120,99;-3051,86;-30,00;251,4;123,25;42,86;86,27;rot;braucht 42,9 % mehr
-gesamt;-25,00;43,35;7629,64;-2543,21;-25,00;234,7;115,03;33,33;86,27;rot;braucht 33,3 % mehr
-gesamt;-20,00;46,24;8138,28;-2034,57;-20,00;220,0;107,84;25,00;86,27;rot;braucht 25,0 % mehr
-gesamt;-15,00;49,13;8646,92;-1525,93;-15,00;207,1;101,50;17,65;86,27;rot;braucht 17,6 % mehr
-gesamt;-10,00;52,02;9155,57;-1017,28;-10,00;195,6;95,86;11,11;86,27;rot;braucht 11,1 % mehr
-gesamt;-5,00;54,91;9664,21;-508,64;-5,00;185,3;90,82;5,26;86,27;rot;braucht 5,3 % mehr
-gesamt;0,00;57,80;10172,85;0,00;0,00;176,0;86,27;0,00;86,27;referenz;Referenz (heutiger Preis)
-gesamt;5,00;60,69;10681,49;508,64;5,00;167,6;82,17;-4,76;86,27;gruen;darf 4,8 % verlieren
-gesamt;10,00;63,58;11190,14;1017,29;10,00;160,0;78,43;-9,09;86,27;gruen;darf 9,1 % verlieren
-gesamt;15,00;66,47;11698,78;1525,93;15,00;153,0;75,02;-13,04;86,27;gruen;darf 13,0 % verlieren
-gesamt;20,00;69,36;12207,42;2034,57;20,00;146,7;71,90;-16,67;86,27;gruen;darf 16,7 % verlieren
-gesamt;25,00;72,25;12716,06;2543,21;25,00;140,8;69,02;-20,00;86,27;gruen;darf 20,0 % verlieren
-gesamt;30,00;75,14;13224,71;3051,86;30,00;135,4;66,37;-23,08;86,27;gruen;darf 23,1 % verlieren
+﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct;Ist_Auslastung_Pct;Ampel;Hinweis;Zeilenfarbe
+gesamt;-30,00;40,46;7120,99;-3051,86;-30,00;251,4;123,25;42,86;86,27;unmoeglich;unerreichbar - nur 28 Naechte frei;
+gesamt;-25,00;43,35;7629,64;-2543,21;-25,00;234,7;115,03;33,33;86,27;unmoeglich;unerreichbar - nur 28 Naechte frei;
+gesamt;-20,00;46,24;8138,28;-2034,57;-20,00;220,0;107,84;25,00;86,27;unmoeglich;unerreichbar - nur 28 Naechte frei;
+gesamt;-15,00;49,13;8646,92;-1525,93;-15,00;207,1;101,50;17,65;86,27;unmoeglich;unerreichbar - nur 28 Naechte frei;
+gesamt;-10,00;52,02;9155,57;-1017,28;-10,00;195,6;95,86;11,11;86,27;rot;braucht 11,1 % mehr;
+gesamt;-5,00;54,91;9664,21;-508,64;-5,00;185,3;90,82;5,26;86,27;rot;braucht 5,3 % mehr;
+gesamt;0,00;57,80;10172,85;0,00;0,00;176,0;86,27;0,00;86,27;referenz;Referenz (heutiger Preis);#E8EEF4
+gesamt;5,00;60,69;10681,49;508,64;5,00;167,6;82,17;-4,76;86,27;gruen;darf 4,8 % verlieren;
+gesamt;10,00;63,58;11190,14;1017,29;10,00;160,0;78,43;-9,09;86,27;gruen;darf 9,1 % verlieren;
+gesamt;15,00;66,47;11698,78;1525,93;15,00;153,0;75,02;-13,04;86,27;gruen;darf 13,0 % verlieren;
+gesamt;20,00;69,36;12207,42;2034,57;20,00;146,7;71,90;-16,67;86,27;gruen;darf 16,7 % verlieren;
+gesamt;25,00;72,25;12716,06;2543,21;25,00;140,8;69,02;-20,00;86,27;gruen;darf 20,0 % verlieren;
+gesamt;30,00;75,14;13224,71;3051,86;30,00;135,4;66,37;-23,08;86,27;gruen;darf 23,1 % verlieren;

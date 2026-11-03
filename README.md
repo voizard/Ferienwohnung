@@ -78,6 +78,10 @@ Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
 1. **Übersicht** – Umsatz, Auslastung, ADR und RevPAR als KPI-Karten + Verlauf je Phase
 2. **Preis & Nachfrage** – ADR netto vs. Brutto-Preis, Wochentage, Buchungsvorlauf, Aufenthaltsdauer
 3. **Datenqualität** – Umsatz vs. Belegung, Storno-Fall, Gebührenmodell-Sprung, offene Annahmen
+4. **Preis testen (What-if)** – Break-even-Tabelle: Wie viel Auslastung braucht eine
+   Preissenkung/-erhöhung, um denselben Umsatz zu halten? Mit Ampelfarbe und
+   hervorgehobener Referenzzeile. Aufbau ohne DAX in
+   [`dax/measures.md`](dax/measures.md) (Abschnitt 8B).
 
 Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 `pbix/eigene_Airbnb_Auswertung.pbix` bei (Power BI Desktop öffnen).
@@ -173,11 +177,13 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `daten/anpassungen.csv` – Airbnb-Anpassungen
 - `daten/kalender.csv` – Datumstabelle (374 Tage, 11 Spalten; Spalte `Teilmonat` kennzeichnet angeschnittene Monate)
 - `daten/kalender_tagesbasis.csv` – Zwischenstand der Tages-Tabelle
-- `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle vier Tabellen als Excel-Datei
+- `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle Tabellen als Excel-Datei (buchungen, anpassungen, kalender, betriebsphasen, preisszenarien, preisszenarien_monat + LIESMICH)
 - `daten/datadictionary.md` – Spalten, Typen, bekannte Fallen
 - `daten/build_datasets.py` – Roh-Export → `buchungen.csv`, `anpassungen.csv`, `kalender.csv`
 - `daten/build_kalender_tagesbasis.py` – Tages-Tabelle mit Buchbarkeitsfenstern
 - `daten/add_flags_to_kalender.py` – ergänzt `kalender.csv` um Betriebsphase/Verfügbar/Belegt/Teilmonat
+- `analyse/preisszenario.py` – Break-even-Szenarien (Preis × Auslastung) → `analyse/out/preisszenarien_*.csv`
+- `analyse/out/preisszenarien_gesamt.csv` / `_phase1` / `_phase2` / `_monat.csv` – fertige Szenario-Tabellen (deutsche Schreibweise, mit Ampel/Hinweis/Zeilenfarbe)
 - `dax/measures.md` – alle Measures mit Erklärung
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
 - `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)
@@ -194,6 +200,7 @@ export AIRBNB_RAW_CSV=/pfad/zu/airbnb_.csv
 python3 daten/build_datasets.py             # Roh-Export → buchungen/anpassungen/kalender
 python3 daten/build_kalender_tagesbasis.py  # Tages-Tabelle mit Buchbarkeitsfenstern
 python3 daten/add_flags_to_kalender.py      # Flags in kalender.csv zurückschreiben
+python3 analyse/preisszenario.py            # Break-even-Szenarien (Preis × Auslastung)
 python3 reports/build_xlsx.py               # Excel-Datei für Power BI
 tectonic reports/Phasenvergleich_Ferienwohnung.tex --outdir reports  # LaTeX-Report → PDF
 ```

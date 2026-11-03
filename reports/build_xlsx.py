@@ -110,9 +110,11 @@ liesmich = [
     ['Nicht enthalten', 'Keine personenbezogenen Gaestedaten. Die Details-Spalte des Airbnb-Exports (Zahlungsadresse) wurde bewusst verworfen.'],
     ['Ausgeschlossen', 'Alle Buchungen vor 2021 (24 Zeilen aus Jun-Aug 2020) - sie gehoeren nicht zu den beiden Vermietungsphasen. Ab 2026-11-02 enthaelt der Bestand auch die Buchungen bis 31.10.2026 (Phase 2 laeuft ohne Saisonbruch weiter).'],
     ['Kosten', 'Noch nicht enthalten: Nebenkosten, Reinigung, Instandhaltung. Ein Deckungsbeitrag ist daher derzeit nicht berechenbar.'],
-    ['Blatt preisszenarien', 'Preis-Szenarien fuer die Seite "Preis testen" (Preis -30 % bis +30 %). Umsatz bei KONSTANTER Auslastung und Break-even. Erzeugt von analyse/preisszenario.py.'],
+    ['Blatt preisszenarien', 'Preis-Szenarien fuer die Seite "Preis testen" (Preis -30 % bis +30 %). Umsatz bei KONSTANTER Auslastung und Break-even. Basis: gesamt + beide Phasen. Erzeugt von analyse/preisszenario.py.'],
+    ['Blatt preisszenarien_monat', 'Gleiche Rechnung je Monat (Basis = YYYY-MM), 13 Preisschritte je Monat = 117 Zeilen. ZUORDNUNG AUF TAGESBASIS: eine Nacht zaehlt in den Monat, in dem sie LIEGT - eine Buchung 28.09.-03.10. also teils September, teils Oktober. Naechte + verfuegbare Naechte kommen aus kalender.csv, der Umsatz wird nach Kalendernaechten verteilt. Damit ist die Monatssumme konsistent zur Gesamtauslastung (176/204 = 86,27 %) und deckt sich mit BEFUNDE.md. SLICER: Power BI erkennt Basis ("2025-10") beim Import als DATUM und zeigt im Slicer nur den Monatsersten. Deshalb fuer den Slicer die Spalte Monat ("Oktober 2025", reiner Text) verwenden und nach Monat_Sort (202510) sortieren. Monat_Datum ist bewusst der LETZTE Tag des Monats - so beschriftet Power BI eine Datumsachse mit "Oktober 2025" statt "1. Oktober". ACHTUNG Teilmonate (2025-10, 2025-12, 2026-05): dort schneidet das Buchbarkeitsfenster den Monat an, die Auslastung ist nicht mit vollen Monaten vergleichbar (Spalte Teilmonat = ja). Gleiche Ehrlichkeitsgrenze wie oben: keine gemessene Preiselastizitaet.'],
     ['WICHTIG: keine Preiselastizitaet', 'Der Datensatz enthaelt KEINE gemessene Preiselastizitaet. Modell B erklaert den erzielten Preis, nicht die Nachfragereaktion. "Umsatz bei konstanter Auslastung" ist die Obergrenze; die Break-even-Spalte ist die Entscheidungsgroesse. Eine Elastizitaet ist eine Annahme.'],
-    ['Spalten Ampel/Hinweis/Ist_Auslastung_Pct', 'Fertige Hilfsspalten fuer die Seite "Preis testen" OHNE DAX: Ampel = gruen/rot/referenz (fuer die bedingte Hintergrundfarbe), Hinweis = Klartext ("darf 9,1 % verlieren"), Ist_Auslastung_Pct = Vergleichswert. Die Spalten *_Pct stehen als Prozentpunkt-Zahl (86,27 = 86,27 %) - KEIN Prozentformat darauf legen.'],
+    ['Spalten Ampel/Hinweis/Ist_Auslastung_Pct', 'Fertige Hilfsspalten fuer die Seite "Preis testen" OHNE DAX: Ampel = gruen/rot/unmoeglich/referenz (fuer die bedingte Hintergrundfarbe), Hinweis = Klartext ("darf 9,1 % verlieren"), Ist_Auslastung_Pct = Vergleichswert. unmoeglich = Break-even-Auslastung ueber 100 % - die noetigen Naechte gibt es gar nicht, die Preissenkung ist nicht kompensierbar. Die Spalten *_Pct stehen als Prozentpunkt-Zahl (86,27 = 86,27 %) - KEIN Prozentformat darauf legen.'],
+    ['Spalte Zeilenfarbe', 'Enthaelt NUR in der Referenzzeile (Preis_Delta_Pct = 0) einen Hex-Wert (#E8EEF4), sonst leer. Damit laesst sich die Referenzzeile in Power BI mit EINEM Dialog je Spalte hervorheben: Spalte -> Formatieren -> Zellenlemente -> Hintergrundfarbe -> Bedingte Formatierung -> Formatstil "Feldwert" -> Feld Zeilenfarbe. Fuer die ganze Zeile auf jeder sichtbaren Spalte wiederholen (Preis_Delta_Pct, Preis_je_Nacht_EUR, Umsatz_Konstant_EUR, Break_even_Auslastung_Pct, Hinweis). Fett geht in Power BI nur spaltig, nie zeilenweise - die Hervorhebung traegt daher Fuelle + Rahmen.'],
     ['Format (Festlegung Chris)', 'Alle Exporte in deutscher Schreibweise: Semikolon als Trenner, Dezimalkomma, UTF-8 mit BOM. Sonst liest ein deutsches Power BI den Punkt als Tausenderpunkt (aus 40,46 wird 4046).'],
 ]
 sheets.append(('LIESMICH', lh, liesmich))
@@ -133,9 +135,14 @@ sheets.append(('betriebsphasen', ph_header, ph_rows))
 # Preis-Szenarien als typisiertes Blatt (typisierte Zellen -> kein
 # Locale-Problem beim Import). Erzeugt von analyse/preisszenario.py.
 sys.path.insert(0, os.path.join(BASE, 'analyse'))
-from preisszenario import alle_szenarien  # noqa: E402
+from preisszenario import alle_szenarien, monats_szenarien  # noqa: E402
 sp_header, sp_rows = alle_szenarien()
 sheets.append(('preisszenarien', sp_header, sp_rows))
+
+# Gleiche Rechnung je Monat (Basis = 'YYYY-MM'), eine Zeile je Monat und
+# Preisschritt. Verfuegbare Naechte je Monat aus kalender.csv.
+mp_header, mp_rows = monats_szenarien()
+sheets.append(('preisszenarien_monat', mp_header, mp_rows))
 
 # --- XLSX schreiben ----------------------------------------------------
 CT = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
