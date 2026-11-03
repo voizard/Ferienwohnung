@@ -168,13 +168,13 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 
 - `daten/buchungen.csv` – aufbereitete Buchungen (import-fertig)
 - `daten/anpassungen.csv` – Airbnb-Anpassungen
-- `daten/kalender.csv` – Datumstabelle (374 Tage, 10 Spalten)
+- `daten/kalender.csv` – Datumstabelle (374 Tage, 11 Spalten; Spalte `Teilmonat` kennzeichnet angeschnittene Monate)
 - `daten/kalender_tagesbasis.csv` – Zwischenstand der Tages-Tabelle
 - `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle vier Tabellen als Excel-Datei
 - `daten/datadictionary.md` – Spalten, Typen, bekannte Fallen
 - `daten/build_datasets.py` – Roh-Export → `buchungen.csv`, `anpassungen.csv`, `kalender.csv`
 - `daten/build_kalender_tagesbasis.py` – Tages-Tabelle mit Buchbarkeitsfenstern
-- `daten/add_flags_to_kalender.py` – ergänzt `kalender.csv` um Betriebsphase/Verfügbar/Belegt
+- `daten/add_flags_to_kalender.py` – ergänzt `kalender.csv` um Betriebsphase/Verfügbar/Belegt/Teilmonat
 - `dax/measures.md` – alle Measures mit Erklärung
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
 - `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)

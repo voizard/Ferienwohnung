@@ -77,13 +77,21 @@ verwaist.
 ### `kalender.csv` (Dimension)
 Täglich, 24.10.2025 – 01.11.2026 (bereinigt um die ausgeschlossenen 2020-Daten).
 Spalten: `Datum`, `Jahr`, `Quartal`, `Monat`, `Monatsname`, `Kalenderwoche`,
-`Wochentag`, **`Betriebsphase`**, **`Verfuegbar`** (ja/nein), **`Belegt`** (ja/nein)
-– 10 Spalten, 374 Zeilen. **Als Datumstabelle markieren** (Spalte `Datum`).
+`Wochentag`, **`Betriebsphase`**, **`Verfuegbar`** (ja/nein), **`Belegt`** (ja/nein),
+**`Teilmonat`** (ja/nein)
+– 11 Spalten, 374 Zeilen. **Als Datumstabelle markieren** (Spalte `Datum`).
 
 `Monatsname` und `Wochentag` sind **deutsch** (`Oktober`, `Donnerstag`)
 – festgelegt 02.11.2026. Auch `buchungen[Anreisetag_Wochentag]` ist deutsch.
 Die Werte kommen aus `MONATSNAME`/`WOCHENTAG` in `build_kalender_tagesbasis.py`
 und `build_datasets.py`, nicht aus `strftime` (das liefert englische Namen).
+
+**`Teilmonat`** (ja/nein) markiert Monate, die das Buchbarkeitsfenster
+anschneidet – **Okt 2025, Dez 2025, Mai 2026**. Ihre Auslastungsquote ist
+**nicht** mit vollen Monaten vergleichbar: Sie haben weniger verfügbare Nächte,
+und der Fensterausschnitt liest sich sonst als Nachfrage. Im Monatsvergleich
+diese Monate ausblenden oder kennzeichnen (festgelegt 03.11.2026).
+Ermittelt von `teilmonat_monate()` in `build_kalender_tagesbasis.py`.
 
 Tage außerhalb der Buchbarkeitsfenster tragen die Phase
 `Zwischenzeit (nicht buchbar)` mit `Verfuegbar = nein`. Erzeugt von

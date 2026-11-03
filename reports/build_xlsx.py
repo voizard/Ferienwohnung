@@ -95,6 +95,7 @@ liesmich = [
     ['Blatt buchungen', '53 Buchungen (Faktentabelle). Eine Zeile = eine Buchung.'],
     ['Blatt anpassungen', 'Airbnb-Anpassungen/Mediationen (Faktentabelle). Zeilen vor 2021 sind ausgeschlossen, damit keine verwaiste Anpassung ohne Gegenstueck in buchungen entsteht.'],
     ['Blatt kalender', 'Datumstabelle, taeglich 2025-10-24 bis 2026-11-01. In Power BI als Datumstabelle markieren (Spalte Datum).'],
+    ['Spalte Teilmonat', 'ja = Monat wird vom Buchbarkeitsfenster angeschnitten (Okt 2025, Dez 2025, Mai 2026). Diese Monate im Monatsvergleich ausblenden oder kennzeichnen - ihre Auslastungsquote ist nicht mit vollen Monaten vergleichbar (weniger verfuegbare Naechte). Alle anderen Monate: nein.'],
     ['Blatt betriebsphasen', 'Buchbarkeitsfenster je Vermietungsphase - steuert die Auslastung.'],
     ['WICHTIG: Umsatz != Belegung', 'Netto_Betrag ist der Umsatz. Naechte_Belegt ist die Belegung. Beide koennen auseinanderfallen: (1) eine stornierte, aber trotzdem ausgezahlte Buchung hat Umsatz und 0 belegte Naechte; (2) eine Verlaengerung desselben Gastes zahlt zweimal, belegt aber nur einmal.'],
     ['Naechte_Belegt', 'Ist eine VEREINIGUNG der Aufenthaltszeitraeume, keine Summe. Ueberlappende Aufenthalte zaehlen nur einmal - sonst sinkt der ADR kuenstlich um ~6 %.'],

@@ -17,6 +17,8 @@ Logik:
                -> Tageszählung = Vereinigung, Ueberlappungen zaehlen einmal
                -> Ueberhang ueber das Fensterende hinaus faellt automatisch raus
 """
+import calendar
+import collections
 import csv
 import datetime
 import os
@@ -61,6 +63,31 @@ def ist_gesperrt(tag):
     return any(ab <= tag <= bis for ab, bis in GESPERRT)
 
 
+def teilmonat_monate():
+    """Monate, die NICHT vollstaendig im Buchbarkeitsfenster liegen.
+
+    Ein Monat ist Teilmonat, wenn das Fenster ihn anschneidet (Fensterstart
+    oder -ende faellt in den Monat). Beispiele: Okt 2025 (Start 24.10.),
+    Dez 2025 (Ende 13.12.), Mai 2026 (Start 22.05.).
+
+    Warum wichtig: Ein Teilmonat hat weniger verfuegbare Naechte, seine
+    Auslastungsquote ist daher NICHT mit vollen Monaten vergleichbar. Im
+    Monatsvergleich (Power BI) diese Monate kennzeichnen oder ausblenden -
+    sonst liest man den Fensterausschnitt als Nachfrage (Chris, 03.11.2026).
+    """
+    im_fenster = collections.Counter()
+    tag = START
+    while tag <= ENDE:
+        if phase_von(tag) != 'Zwischenzeit (nicht buchbar)':
+            im_fenster[(tag.year, tag.month)] += 1
+        tag += datetime.timedelta(days=1)
+    teil = set()
+    for (jahr, monat), tage in im_fenster.items():
+        if tage < calendar.monthrange(jahr, monat)[1]:
+            teil.add((jahr, monat))
+    return teil
+
+
 def lade_belegte_tage():
     """Vereinigung aller Aufenthaltsnaechte, Storno ausgeschlossen."""
     pfad = os.path.join(OUT, 'buchungen.csv')
@@ -80,6 +107,7 @@ def lade_belegte_tage():
 
 def main():
     belegt_tage = lade_belegte_tage()
+    teilmonate = teilmonat_monate()
     zeilen = []
     tag = START
     while tag <= ENDE:
@@ -99,6 +127,10 @@ def main():
             # Naechte ausserhalb (z. B. 01.-02.10.2026, Ueberhang von B001) zaehlen
             # bewusst nicht - sonst waere der Zaehler groesser als der Nenner.
             'Belegt': 'ja' if (verfuegbar and tag in belegt_tage) else 'nein',
+            # Teilmonat = Monat wird vom Buchbarkeitsfenster angeschnitten.
+            # Pro Tag konstant; im Monatsvergleich nicht mit vollen Monaten
+            # vergleichen (siehe teilmonat_monate()).
+            'Teilmonat': 'ja' if (tag.year, tag.month) in teilmonate else 'nein',
         })
         tag += datetime.timedelta(days=1)
 
@@ -120,6 +152,8 @@ def main():
         print(f'  {name}: {len(b)}/{len(v)} = {len(b) / len(v) * 100:.1f} %')
     ausserhalb = [z for z in zeilen if z['Belegt'] == 'ja' and z['Verfuegbar'] == 'nein']
     print(f'  belegte Tage ausserhalb des Fensters: {len(ausserhalb)}')
+    tm = sorted({(z['Jahr'], z['Monat']) for z in zeilen if z['Teilmonat'] == 'ja'})
+    print(f'  Teilmonate (angeschnitten): {", ".join(f"{j}-{m:02d}" for j, m in tm)}')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,11 @@ Quelle der beiden Flags und der Phasenzuordnung ist kalender_tagesbasis.csv
 7 Spalten und bekommt drei dazu -> Drop-in fuer das Power-BI-Modell,
 Der Host muss nur aktualisieren.
 
-Ergebnis: kalender.csv mit 10 Spalten, 374 Zeilen (2025-10-24 .. 2026-11-01).
+Ergebnis: kalender.csv mit 11 Spalten, 374 Zeilen (2025-10-24 .. 2026-11-01).
+
+`Teilmonat` (ja/nein) markiert Monate, die das Buchbarkeitsfenster
+anschneidet (Okt 2025, Dez 2025, Mai 2026) - ihre Auslastungsquote ist
+nicht mit vollen Monaten vergleichbar.
 """
 import csv
 import os
@@ -15,7 +19,7 @@ import os
 OUT = os.path.dirname(os.path.abspath(__file__))
 ZIEL = os.path.join(OUT, 'kalender.csv')
 QUELLE = os.path.join(OUT, 'kalender_tagesbasis.csv')
-NEUE_SPALTEN = ['Betriebsphase', 'Verfuegbar', 'Belegt']
+NEUE_SPALTEN = ['Betriebsphase', 'Verfuegbar', 'Belegt', 'Teilmonat']
 
 
 def main():
