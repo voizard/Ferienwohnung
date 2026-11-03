@@ -83,6 +83,13 @@ Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
    hervorgehobener Referenzzeile. Aufbau ohne DAX in
    [`dax/measures.md`](dax/measures.md) (Abschnitt 8B).
 
+<!-- Screenshot der Seite "Preis testen" -->
+![Preis testen – Break-even je Preisschritt](screenshots/02_preisanpassung.png?v=1)
+
+*13 Preisschritte von −30 % bis +30 %. Je Zeile: Preis je Nacht, Umsatz bei
+konstanter Auslastung, Break-even-Nächte, Break-even-Auslastung und ein
+Klartext-Hinweis. Grau hervorgehoben = heutiger Preis (Referenz).*
+
 Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 `pbix/eigene_Airbnb_Auswertung.pbix` bei (Power BI Desktop öffnen).
 
@@ -188,6 +195,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
 - `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)
 - `screenshots/01_overview.png` – Startseite des Reports (KPI-Karten und Monatsverlauf)
+- `screenshots/02_preisanpassung.png` – Seite „Preis testen": Break-even je Preisschritt (Preis × Auslastung) mit Ampel und hervorgehobener Referenzzeile
 - `pbix/eigene_Airbnb_Auswertung.pbix` – Power BI Datei
 
 ## Reproduktion
