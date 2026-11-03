@@ -154,6 +154,9 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 
 ## Was ich daraus mitgenommen habe
 
+- **Einheitliches Ausgabeformat**: Alle Exporte für Power BI in deutscher
+  Schreibweise (Semikolon, Dezimalkomma, UTF-8 BOM) – sonst liest ein deutsches
+  Power BI den Punkt als Tausenderpunkt (aus `40,46` wird `4046`).
 - Aufbereitung eines echten, unaufgeräumten Datenexports: gemischte
   Dezimaltrenner in einer Datei, Auszahlungszeilen, die Buchungen spiegeln,
   uneinheitliche Spalten über Monatsdateien

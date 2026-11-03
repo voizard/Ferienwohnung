@@ -4,7 +4,7 @@
 XLSX = ZIP mit XML. Wir schreiben die Teile selbst (inline strings,
 Datums-Seriennummern, eigene Zellstile fuer Header/Datum/Waehrung).
 """
-import csv, os, re, zipfile, datetime as dt
+import csv, os, re, sys, zipfile, datetime as dt
 from xml.sax.saxutils import escape
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,7 +12,9 @@ D = os.path.join(BASE, 'daten')
 OUT = os.path.join(D, 'Airbnb_Datensatz_PowerBI.xlsx')
 EPOCH = dt.date(1899, 12, 30)
 ISO = re.compile(r'^\d{4}-\d{2}-\d{2}$')
-MONEY = {'Netto_Betrag', 'Servicegebuehr', 'Brutto_Betrag', 'ADR_Netto', 'Betrag'}
+MONEY = {'Netto_Betrag', 'Servicegebuehr', 'Brutto_Betrag', 'ADR_Netto', 'Betrag',
+         'Preis_je_Nacht_EUR', 'Umsatz_Konstant_EUR', 'Umsatz_Delta_EUR'}
+SEP = ';'          # deutscher CSV-Trenner in daten/*.csv
 
 S_HEAD, S_TXT, S_DATE, S_MONEY, S_INT = 1, 0, 2, 3, 0
 
@@ -27,7 +29,7 @@ def colref(i):
 
 def read_csv(name):
     with open(os.path.join(D, name), encoding='utf-8-sig', newline='') as fh:
-        return list(csv.reader(fh))
+        return list(csv.reader(fh, delimiter=SEP))
 
 
 def cell_xml(ref, val, style):
@@ -77,8 +79,9 @@ def coerce(table):
                 row.append(dt.date.fromisoformat(v))
             else:
                 try:
-                    f = float(v)
-                    row.append(int(f) if f == int(f) and '.' not in v else f)
+                    # Deutsche Schreibweise: Dezimalkomma (z. B. 40,46).
+                    f = float(v.replace('.', '').replace(',', '.')) if ',' in v else float(v)
+                    row.append(int(f) if f == int(f) else f)
                 except ValueError:
                     row.append(v)
         rows.append(row)
@@ -107,6 +110,9 @@ liesmich = [
     ['Nicht enthalten', 'Keine personenbezogenen Gaestedaten. Die Details-Spalte des Airbnb-Exports (Zahlungsadresse) wurde bewusst verworfen.'],
     ['Ausgeschlossen', 'Alle Buchungen vor 2021 (24 Zeilen aus Jun-Aug 2020) - sie gehoeren nicht zu den beiden Vermietungsphasen. Ab 2026-11-02 enthaelt der Bestand auch die Buchungen bis 31.10.2026 (Phase 2 laeuft ohne Saisonbruch weiter).'],
     ['Kosten', 'Noch nicht enthalten: Nebenkosten, Reinigung, Instandhaltung. Ein Deckungsbeitrag ist daher derzeit nicht berechenbar.'],
+    ['Blatt preisszenarien', 'Preis-Szenarien fuer die Seite "Preis testen" (Preis -30 % bis +30 %). Umsatz bei KONSTANTER Auslastung und Break-even. Erzeugt von analyse/preisszenario.py.'],
+    ['WICHTIG: keine Preiselastizitaet', 'Der Datensatz enthaelt KEINE gemessene Preiselastizitaet. Modell B erklaert den erzielten Preis, nicht die Nachfragereaktion. "Umsatz bei konstanter Auslastung" ist die Obergrenze; die Break-even-Spalte ist die Entscheidungsgroesse. Eine Elastizitaet ist eine Annahme.'],
+    ['Format (Festlegung Chris)', 'Alle Exporte in deutscher Schreibweise: Semikolon als Trenner, Dezimalkomma, UTF-8 mit BOM. Sonst liest ein deutsches Power BI den Punkt als Tausenderpunkt (aus 40,46 wird 4046).'],
 ]
 sheets.append(('LIESMICH', lh, liesmich))
 
@@ -122,6 +128,13 @@ ph_rows = [
      dt.date(2026, 8, 7), dt.date(2026, 8, 16), 10, 153],
 ]
 sheets.append(('betriebsphasen', ph_header, ph_rows))
+
+# Preis-Szenarien als typisiertes Blatt (typisierte Zellen -> kein
+# Locale-Problem beim Import). Erzeugt von analyse/preisszenario.py.
+sys.path.insert(0, os.path.join(BASE, 'analyse'))
+from preisszenario import alle_szenarien  # noqa: E402
+sp_header, sp_rows = alle_szenarien()
+sheets.append(('preisszenarien', sp_header, sp_rows))
 
 # --- XLSX schreiben ----------------------------------------------------
 CT = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',

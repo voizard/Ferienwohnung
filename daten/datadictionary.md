@@ -2,6 +2,26 @@
 
 Quelle, Spalten, Typen, Bereinigungsregeln – und die Fallen, die im Export stecken.
 
+## Ausgabeformat (verbindlich)
+
+Alle Exporte für Power BI werden in **deutscher Schreibweise** geschrieben
+(Festlegung Chris, 20.10.2026, bestätigt 03.11.2026):
+
+| Merkmal | Wert |
+| --- | --- |
+| Trennzeichen | Semikolon `;` |
+| Dezimaltrenner | Komma (z. B. `40,46`) |
+| Kodierung | UTF-8 **mit** BOM |
+| Datum | ISO `JJJJ-MM-TT` |
+| Tausendertrennzeichen | keines |
+
+**Warum:** Ein deutsches Power BI liest den **Punkt** als Tausendertrennzeichen.
+Aus `40.46` wird dann still **4046** – Faktor 100. Der Fehler ist im Import nicht
+sichtbar (kein Fehler, nur falsche Zahlen). Deshalb gilt: deutsch, immer.
+
+Ausnahmen: In der **XLSX** stehen Zahlen als echte Zahlzellen – dort regelt
+Excel die Anzeige. Die CSV-Dateien in `daten/` folgen der Regel oben.
+
 ## Quelle
 
 | Quelle | Format | Inhalt | Zeitraum |

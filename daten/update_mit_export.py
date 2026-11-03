@@ -47,8 +47,18 @@ FELDER = ['Datum', 'Typ', 'Buchungsdatum', 'Startdatum', 'Enddatum', 'Nächte',
 
 
 def lies(pfad):
+    """Liest eine CSV und erkennt das Trennzeichen selbst.
+
+    Die Rohdatei (airbnb_master.csv, Roh-Export) nutzt Komma, die abgeleiteten
+    Dateien in daten/ (buchungen, kalender) nutzen Semikolon (deutsche
+    Schreibweise). Deshalb nicht fest verdrahten, sondern an der Kopfzeile
+    entscheiden.
+    """
     with open(pfad, encoding='utf-8-sig', newline='') as fh:
-        r = csv.DictReader(fh)
+        erste = fh.readline()
+        fh.seek(0)
+        sep = ';' if ';' in erste else ','
+        r = csv.DictReader(fh, delimiter=sep)
         kopf = r.fieldnames
         zeilen = [{k: (v or '').strip() for k, v in z.items() if k} for z in r]
     return kopf, zeilen
@@ -308,9 +318,9 @@ def main():
     flags = os.path.join(HIER, 'kalender_flags.csv')
     if os.path.exists(flags):
         with open(os.path.join(HIER, 'kalender.csv'), encoding='utf-8-sig') as fh:
-            kal = list(csv.DictReader(fh))
+            kal = list(csv.DictReader(fh, delimiter=';'))
         with open(flags, 'w', encoding='utf-8-sig', newline='') as fh:
-            w = csv.writer(fh)
+            w = csv.writer(fh, delimiter=';')
             w.writerow(['Datum', 'Verfuegbar', 'Belegt'])
             for z in kal:
                 w.writerow([z['Datum'], z['Verfuegbar'], z['Belegt']])

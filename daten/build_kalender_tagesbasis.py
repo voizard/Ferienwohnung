@@ -24,6 +24,7 @@ import datetime
 import os
 
 OUT = os.path.dirname(os.path.abspath(__file__))
+SEP = ';'          # deutscher CSV-Trenner (wie buchungen.csv/kalender.csv)
 
 # Buchbarkeitsfenster (vom Host bestaetigt). Phase 0 (2020) ist ausgeschlossen.
 # Phase 1 beginnt am 24.10.2025 - die Vermietung startete erst da (erste Buchung
@@ -93,7 +94,7 @@ def lade_belegte_tage():
     pfad = os.path.join(OUT, 'buchungen.csv')
     tage = set()
     with open(pfad, encoding='utf-8-sig') as fh:
-        for r in csv.DictReader(fh):
+        for r in csv.DictReader(fh, delimiter=SEP):
             if (r.get('Storno') or '').strip().lower() == 'ja':
                 continue
             anreise = datetime.date.fromisoformat(r['Anreise'])
@@ -137,7 +138,7 @@ def main():
     ziel = os.path.join(OUT, 'kalender_tagesbasis.csv')
     # utf-8-sig = mit BOM, wie kalender.csv/buchungen.csv (Chris' Vorgabe).
     with open(ziel, 'w', encoding='utf-8-sig', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=list(zeilen[0].keys()))
+        w = csv.DictWriter(fh, fieldnames=list(zeilen[0].keys()), delimiter=SEP)
         w.writeheader()
         w.writerows(zeilen)
 

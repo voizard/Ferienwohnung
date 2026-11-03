@@ -21,8 +21,10 @@ Modellierungsentscheidungen (mit dem Host geklärt):
   5. Überlappende Aufenthalte zählen für die Belegung nur EINMAL:
      `Naechte_Belegt` = Nächte, die noch nicht von einem anderen Aufenthalt
      abgedeckt sind (Vereinigung der Zeiträume).
-  6. Ausgabe: UTF-8 mit BOM, Komma als Trenner, Punkt als Dezimaltrenner,
-     ISO-Datumsformat (yyyy-mm-dd) -> eindeutig für Power Query.
+  6. Ausgabe: DEUTSCHE Schreibweise (Festlegung Chris, 20.10.2026, bestaetigt
+     03.11.2026): Semikolon als Trenner, Dezimalkomma, UTF-8 mit BOM,
+     ISO-Datumsformat (yyyy-mm-dd). Sonst liest ein deutsches Power BI den
+     Punkt als Tausendertrennzeichen (aus 40,46 wird 4046).
 """
 import csv
 import datetime
@@ -35,6 +37,18 @@ _KANDIDATEN = [os.environ.get('AIRBNB_RAW_CSV', ''),
                '../airbnb-data/raw/Einnahmen/airbnb_.csv']
 SRC = next((p for p in _KANDIDATEN if p and os.path.exists(p)), 'raw/airbnb_.csv')
 OUT = os.path.dirname(os.path.abspath(__file__))
+SEP = ';'          # deutscher CSV-Trenner
+
+
+def dez(x, n=2):
+    """Zahl -> deutsche Schreibweise (Dezimalkomma, kein Tausenderpunkt)."""
+    return f'{x:.{n}f}'.replace('.', ',')
+
+
+def zahl_de(s):
+    """Deutsche Zahl (Dezimalkomma) -> float. Fuer die Kennzahlen-Kontrolle."""
+    s = (s or '').strip()
+    return float(s.replace('.', '').replace(',', '.')) if s else 0.0
 
 AUSSCHLIESSEN_AB = datetime.date(2021, 1, 1)   # alles davor (2020) raus
 # Bestätigte Stornos: Auszahlung erfolgt, Aufenthalt fand nicht statt.
@@ -158,10 +172,10 @@ for i, r in enumerate(buch, 1):
         'Anreise': an.isoformat() if an else '',
         'Abreise': ab.isoformat() if ab else '',
         'Naechte': naechte or '',
-        'Netto_Betrag': f'{netto:.2f}' if netto is not None else '',
-        'Servicegebuehr': f'{fee:.2f}',
-        'Brutto_Betrag': f'{(netto or 0) + fee:.2f}',
-        'ADR_Netto': f'{netto / naechte:.2f}' if netto and naechte else '',
+        'Netto_Betrag': dez(netto) if netto is not None else '',
+        'Servicegebuehr': dez(fee),
+        'Brutto_Betrag': dez((netto or 0) + fee),
+        'ADR_Netto': dez(netto / naechte) if netto and naechte else '',
         'Naechte_Belegt': nb,
         'Storno': 'ja' if ist_storno else '',
         'Ueberlappung': 'ja' if s in doppel else '',
@@ -174,7 +188,7 @@ for i, r in enumerate(buch, 1):
 
 os.makedirs(OUT, exist_ok=True)
 with open(f'{OUT}/buchungen.csv', 'w', encoding='utf-8-sig', newline='') as fh:
-    w = csv.DictWriter(fh, fieldnames=head)
+    w = csv.DictWriter(fh, fieldnames=head, delimiter=SEP)
     w.writeheader()
     w.writerows(out)
 print(f'buchungen.csv: {len(out)} Zeilen')
@@ -185,20 +199,20 @@ print(f'buchungen.csv: {len(out)} Zeilen')
 _n0 = len(adjs)
 adjs = [r for r in adjs if dt(r['Datum']) and dt(r['Datum']) >= datetime.date(2021, 1, 1)]
 with open(f'{OUT}/anpassungen.csv', 'w', encoding='utf-8-sig', newline='') as fh:
-    w = csv.writer(fh)
+    w = csv.writer(fh, delimiter=SEP)
     w.writerow(['Datum', 'Typ', 'Buchungsdatum', 'Anreise', 'Abreise', 'Naechte', 'Betrag'])
     for r in adjs:
         w.writerow([dt(r['Datum']).isoformat() if dt(r['Datum']) else '', r['Typ'],
                     dt(r['Buchungsdatum']).isoformat() if dt(r['Buchungsdatum']) else '',
                     dt(r['Startdatum']).isoformat() if dt(r['Startdatum']) else '',
                     dt(r['Enddatum']).isoformat() if dt(r['Enddatum']) else '',
-                    r['Nächte'], f"{num(r['Betrag']):.2f}"])
+                    r['Nächte'], dez(num(r['Betrag']))])
 print(f'anpassungen.csv: {len(adjs)} Zeilen ({_n0 - len(adjs)} vor 2021 entfernt)')
 
 start = min(dt(r['Startdatum']) for r in buch if dt(r['Startdatum']))
 end = max(dt(r['Enddatum']) for r in buch if dt(r['Enddatum']))
 with open(f'{OUT}/kalender.csv', 'w', encoding='utf-8-sig', newline='') as fh:
-    w = csv.writer(fh)
+    w = csv.writer(fh, delimiter=SEP)
     w.writerow(['Datum', 'Jahr', 'Quartal', 'Monat', 'Monatsname', 'Kalenderwoche', 'Wochentag'])
     d, n = start, 0
     while d <= end:
@@ -215,7 +229,7 @@ agg = collections.defaultdict(lambda: [0, 0.0, 0, 0, 0])
 for r in out:
     k = r['Betriebsphase']
     agg[k][0] += 1
-    agg[k][1] += float(r['Netto_Betrag'] or 0)
+    agg[k][1] += zahl_de(r['Netto_Betrag'])
     agg[k][2] += int(r['Naechte'] or 0)
     agg[k][3] += int(r['Naechte_Belegt'])
     agg[k][4] += 1 if r['Storno'] else 0

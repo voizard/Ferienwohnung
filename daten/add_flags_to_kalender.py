@@ -17,15 +17,16 @@ import csv
 import os
 
 OUT = os.path.dirname(os.path.abspath(__file__))
+SEP = ';'          # deutscher CSV-Trenner
 ZIEL = os.path.join(OUT, 'kalender.csv')
 QUELLE = os.path.join(OUT, 'kalender_tagesbasis.csv')
 NEUE_SPALTEN = ['Betriebsphase', 'Verfuegbar', 'Belegt', 'Teilmonat']
 
 
 def main():
-    quelle = {r['Datum']: r for r in csv.DictReader(open(QUELLE, encoding='utf-8-sig'))}
+    quelle = {r['Datum']: r for r in csv.DictReader(open(QUELLE, encoding='utf-8-sig'), delimiter=SEP)}
     with open(ZIEL, encoding='utf-8-sig') as fh:
-        rows = list(csv.DictReader(fh))
+        rows = list(csv.DictReader(fh, delimiter=SEP))
 
     fehlend = [r['Datum'] for r in rows if r['Datum'] not in quelle]
     if fehlend:
@@ -38,7 +39,7 @@ def main():
     kopf += NEUE_SPALTEN
 
     with open(ZIEL, 'w', encoding='utf-8-sig', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=kopf)
+        w = csv.DictWriter(fh, fieldnames=kopf, delimiter=SEP)
         w.writeheader()
         for r in rows:
             q = quelle[r['Datum']]

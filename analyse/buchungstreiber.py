@@ -98,13 +98,15 @@ for _j in (2025, 2026):
 # 2) Daten laden und Panel bauen
 # --------------------------------------------------------------------------
 def lade_kalender():
-    df = pd.read_csv(os.path.join(DATEN, "kalender.csv"), encoding="utf-8-sig")
+    df = pd.read_csv(os.path.join(DATEN, "kalender.csv"), encoding="utf-8-sig",
+                     sep=";", decimal=",")
     df["Datum"] = pd.to_datetime(df["Datum"]).dt.date
     return df
 
 
 def lade_buchungen():
-    return pd.read_csv(os.path.join(DATEN, "buchungen.csv"), encoding="utf-8-sig")
+    return pd.read_csv(os.path.join(DATEN, "buchungen.csv"), encoding="utf-8-sig",
+                       sep=";", decimal=",")
 
 
 def baue_panel(kalender):
@@ -314,13 +316,16 @@ def main():
     m_naiv, m_cl, tab_a = modell_a(panel)
     b, m_b, m_b2 = modell_b(buchungen)
 
-    # ---- CSV-Ausgaben
-    wd.to_csv(os.path.join(OUT, "auslastung_wochentag.csv"))
-    mo.to_csv(os.path.join(OUT, "auslastung_monat.csv"))
-    ph.to_csv(os.path.join(OUT, "auslastung_phase.csv"))
-    tab_a.to_csv(os.path.join(OUT, "modell_a_odds_ratios.csv"))
+    # ---- CSV-Ausgaben (deutsche Schreibweise: Semikolon, Dezimalkomma, BOM)
+    def _de(pfad, frame, index=True):
+        frame.to_csv(os.path.join(OUT, pfad), sep=';', decimal=',',
+                     encoding='utf-8-sig', index=index)
+    _de("auslastung_wochentag.csv", wd)
+    _de("auslastung_monat.csv", mo)
+    _de("auslastung_phase.csv", ph)
+    _de("modell_a_odds_ratios.csv", tab_a)
     if len(luecken):
-        luecken.to_csv(os.path.join(OUT, "unbelegte_tage.csv"), index=False)
+        _de("unbelegte_tage.csv", luecken, index=False)
 
     # ---- Grafiken
     fig_auslastung_wochentag(panel, os.path.join(FIGS, "auslastung_wochentag.png"))
