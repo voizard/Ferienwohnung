@@ -687,3 +687,147 @@ Listenpreis je Nacht = DIVIDE ( [Umsatz Brutto], [Belegte Naechte] )
 eine Listenpreis-Erhöhung von `1 / 0,8155 = 1,23 €`. Vor der Umstellung waren es
 `1 / 0,9643 = 1,04 €`. Der Preisspielraum ist damit strukturell enger geworden –
 ein Nachteil des Host-Only-Modells, unabhängig von der Auslastung.
+
+---
+
+## 8. Preis-Simulator (What-if) – Seite „Preis testen"
+
+**Zweck:** Preis ändern und sehen, was passiert. **Wichtig vorab:** In den Daten
+steckt **keine** Preiselastizität. Modell B (`analyse/buchungstreiber.py`) erklärt den
+*erzielten* Preis je Nacht – nicht, wie die Nachfrage auf eine Preisänderung reagiert.
+Die Seite trennt daher sauber:
+
+- **Block 1 – reine Preiswirkung** (belastbar): Umsatz bei **konstanter Auslastung**.
+  Das ist die *Obergrenze* – sie gilt nur, wenn die Nachfrage nicht wegbricht.
+- **Block 2 – Break-even** (belastbar): Wie viel Nachfrage darf ich verlieren, damit der
+  Umsatz gleich bleibt? Das ist die eigentliche Entscheidungsgröße.
+- **Block 3 – mit Elastizität** (Annahme): Ein Regler für die Nachfragereaktion. Nur als
+  „was wäre wenn", **nie** als Ergebnis verkaufen.
+
+### 8.1 Der Parameter
+
+Modellierung → **Neuer Parameter** → *Numerischer Bereich*:
+
+| Feld | Wert |
+| --- | --- |
+| Name | `Preisänderung %` |
+| Minimum | `-0.30` |
+| Maximum | `0.30` |
+| Schrittweite | `0.05` |
+| Standard | `0` |
+
+Power BI legt die Tabelle `Preisänderung %` mit Spalte `Preisänderung %` und Measure
+`Preisänderung % Wert` an. Beide Namen exakt so lassen.
+
+### 8.2 Basismaßzahlen (falls nicht vorhanden)
+
+```dax
+ADR Netto = DIVIDE ( [Umsatz Netto], [Belegte Naechte] )
+```
+```dax
+Verfuegbare Naechte = SUM ( betriebsphasen[Verfuegbare_Naechte] )
+```
+
+> `Verfuegbare Naechte` hier bewusst aus `betriebsphasen[Verfuegbare_Naechte]` (204 gesamt,
+> 51 / 153 je Phase) – die fertige Spalte, nicht die gerechnete Maßzahl. So stimmt der
+> Nenner auch ohne Phasenfilter.
+
+### 8.3 Block 1 – reine Preiswirkung (Auslastung konstant)
+
+```dax
+Simulierter ADR =
+    [ADR Netto] * ( 1 + [Preisänderung % Wert] )
+```
+```dax
+Simulierter Umsatz =
+    [Belegte Naechte] * [Simulierter ADR]
+```
+```dax
+Umsatz Delta = [Simulierter Umsatz] - [Umsatz Netto]
+```
+```dax
+Umsatz Delta % = DIVIDE ( [Umsatz Delta], [Umsatz Netto] )
+```
+
+### 8.4 Block 2 – Break-even (die Entscheidungsgröße)
+
+```dax
+Break-even Naechte =
+    DIVIDE ( [Umsatz Netto], [Simulierter ADR] )
+```
+```dax
+Break-even Auslastung % =
+    DIVIDE ( [Break-even Naechte], [Verfuegbare Naechte] )
+```
+```dax
+Erforderliche Nachfrage % =
+    DIVIDE ( [Break-even Naechte] - [Belegte Naechte], [Belegte Naechte] )
+```
+
+**Lesart von `Erforderliche Nachfrage %`:** negativ = *so viel Nachfrage darf ich
+verlieren*; positiv = *so viel bräuchte ich zusätzlich*. Bei +10 % Preis sind das
+**−9,1 %** → bricht die Nachfrage um mehr als 9 % ein, ist die Erhöhung ein Verlust.
+
+### 8.5 Block 3 – mit Elastizität (ANNAHME, klar kennzeichnen)
+
+Zweiter Parameter, gleiche Technik:
+
+| Feld | Wert |
+| --- | --- |
+| Name | `Nachfrage-Elastizitaet` |
+| Minimum | `-2` |
+| Maximum | `0` |
+| Schrittweite | `0.1` |
+| Standard | `0` |
+
+```dax
+Simulierte Naechte =
+    [Belegte Naechte] * ( 1 + [Nachfrage-Elastizitaet Wert] * [Preisänderung % Wert] )
+```
+```dax
+Umsatz mit Elastizitaet =
+    [Simulierte Naechte] * [Simulierter ADR]
+```
+
+> **Ehrlichkeitshinweis auf die Seite schreiben:** „Elastizität = −1" bedeutet: 10 %
+> Preiserhöhung → 10 % weniger Nächte. Dieser Wert ist **gesetzt, nicht gemessen** –
+> unsere 52 Buchungen reichen für keine belastbare Schätzung. Der Block zeigt die
+> Mechanik, nicht die Wahrheit.
+
+### 8.6 Referenzwerte (gerechnet, `analyse/preisszenario.py`)
+
+Gesamtbasis: Umsatz **10.172,85 €**, **176** belegte Nächte, ADR **57,80 €**, 204 verfügbar.
+
+| Preis-Δ | Preis | Umsatz (Auslastung konstant) | Break-even-Nächte | Break-even-Auslastung | darf verlieren |
+| --- | --- | --- | --- | --- | --- |
+| −20 % | 46,24 € | 8.138,28 € | 220,0 | 107,8 % | +25,0 % |
+| −10 % | 52,02 € | 9.155,57 € | 195,6 | 95,9 % | +11,1 % |
+| **0 %** | **57,80 €** | **10.172,85 €** | **176,0** | **86,3 %** | **0 %** |
+| +10 % | 63,58 € | 11.190,14 € | 160,0 | 78,4 % | −9,1 % |
+| +20 % | 69,36 € | 12.207,42 € | 146,7 | 71,9 % | −16,7 % |
+| +30 % | 75,14 € | 13.224,71 € | 135,4 | 66,4 % | −23,1 % |
+
+> **Sofort lesbar:** Eine Preiserhöhung lohnt erst, wenn die Nachfrage *weniger* stark
+> einbricht als der Break-even-Wert. Bei +10 % liegt die Latte bei 9,1 % Nachfrageverlust.
+> Bei −10 % Preis bräuchte ich **+11,1 % mehr Nächte** – mehr als die 28 unbesetzten
+> buchbaren Tage hergeben (16,0 % der 176). Eine reine Preissenkung kann das Loch also
+> nur über neue Nachfrage schließen, nicht über den bestehenden Kalender.
+
+### 8.7 Seitenaufbau (Vorschlag)
+
+| Bereich | Inhalt |
+| --- | --- |
+| Oben links | Slicer **`Preisänderung %`** (Kachel-Optik, „Testpreis" in € anzeigen) |
+| Oben Mitte | Cards: `Simulierter ADR` · `Simulierter Umsatz` · `Umsatz Delta` · `Umsatz Delta %` |
+| Oben rechts | Card `Break-even Auslastung %` mit bedingter Farbe (grün, wenn unter Ist-Auslastung) |
+| Mitte | Liniendiagramm: X = `Preisänderung %`-Werte, Y = `Simulierter Umsatz` + `Umsatz Netto` als Referenzlinie |
+| Unten | Tabelle: die Referenzwerte aus 8.6 als geladene Tabelle `preisszenarien_gesamt.csv` |
+| Fußzeile | Der Ehrlichkeitshinweis aus 8.5, klein, grau |
+
+**Bedingte Farbe für die Break-even-Card:**
+
+```dax
+Break-even Farbe =
+    VAR Ist = DIVIDE ( [Belegte Naechte], [Verfuegbare Naechte] )
+    RETURN IF ( [Break-even Auslastung %] <= Ist, "#2E7D32", "#C62828" )
+```
