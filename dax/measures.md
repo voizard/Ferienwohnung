@@ -260,6 +260,70 @@ Werte: **Auslastung % Phase 1 = 68,6 %** (35/51) · **Auslastung % Phase 2 = 92,
 > **keinen** Einfluss mehr. Wenn der Slicer die Quoten steuern soll, statt der festen
 > Variante `Auslastung % je Phase` oben verwenden.
 
+**Ein Measure für beide Phasen.** Statt zwei fester Measures eines, das die Phase aus
+**Slicer bzw. Matrix-Zeile** liest. Damit zeigt eine Card je nach Slicer 68,6 % oder
+92,2 %, eine Matrix mit `betriebsphasen[Betriebsphase]` auf den Zeilen beide Werte.
+Die gesperrten Nächte kommen aus der Spalte `Gesperrte_Naechte` – die harte `-10`
+entfällt, das Measure bleibt auch bei künftigen Sperrungen korrekt:
+
+```dax
+Auslastung % Phase =
+VAR Phase = SELECTEDVALUE ( betriebsphasen[Betriebsphase] )
+VAR Ab =
+    CALCULATE ( MIN ( betriebsphasen[Verfuegbar_ab] ), betriebsphasen[Betriebsphase] = Phase )
+VAR Bis =
+    CALCULATE ( MAX ( betriebsphasen[Verfuegbar_bis] ), betriebsphasen[Betriebsphase] = Phase )
+VAR Gesperrt =
+    CALCULATE ( MAX ( betriebsphasen[Gesperrte_Naechte] ), betriebsphasen[Betriebsphase] = Phase )
+VAR Verfuegbar = ( Bis - Ab ) + 1 - Gesperrt
+VAR Belegt =
+    SUMX (
+        FILTER ( buchungen, buchungen[Betriebsphase] = Phase && buchungen[Naechte_Belegt] > 0 ),
+        MAX ( 0, MIN ( buchungen[Abreise], Bis + 1 ) - MAX ( buchungen[Anreise], Ab ) )
+    )
+RETURN
+    DIVIDE ( Belegt, Verfuegbar )
+```
+
+Ergebnis: **Phase 1 = 68,6 %** (35/51) · **Phase 2 = 92,2 %** (141/153).
+
+> Achtung Total: Ohne genau **eine** gewählte Phase (Card ohne Slicer, Zeile
+> „Gesamt" in der Matrix) liefert `SELECTEDVALUE` leer → `DIVIDE` leer. Für die
+> Gesamtquote (86,3 %) die Variante unten nehmen.
+
+**Gesamtquote über beide Phasen (176/204 = 86,3 %).** Iteriert die Phasen und
+summiert Belegt und Verfügbar – funktioniert in Card wie Matrix:
+
+```dax
+Auslastung % beide Phasen =
+VAR Belegt =
+    SUMX (
+        VALUES ( betriebsphasen[Betriebsphase] ),
+        VAR Phase = betriebsphasen[Betriebsphase]
+        VAR Ab = CALCULATE ( MIN ( betriebsphasen[Verfuegbar_ab] ), betriebsphasen[Betriebsphase] = Phase )
+        VAR Bis = CALCULATE ( MAX ( betriebsphasen[Verfuegbar_bis] ), betriebsphasen[Betriebsphase] = Phase )
+        RETURN
+            SUMX (
+                FILTER ( buchungen, buchungen[Betriebsphase] = Phase && buchungen[Naechte_Belegt] > 0 ),
+                MAX ( 0, MIN ( buchungen[Abreise], Bis + 1 ) - MAX ( buchungen[Anreise], Ab ) )
+            )
+    )
+VAR Verfuegbar =
+    SUMX (
+        VALUES ( betriebsphasen[Betriebsphase] ),
+        VAR Phase = betriebsphasen[Betriebsphase]
+        VAR Ab = CALCULATE ( MIN ( betriebsphasen[Verfuegbar_ab] ), betriebsphasen[Betriebsphase] = Phase )
+        VAR Bis = CALCULATE ( MAX ( betriebsphasen[Verfuegbar_bis] ), betriebsphasen[Betriebsphase] = Phase )
+        VAR G = CALCULATE ( MAX ( betriebsphasen[Gesperrte_Naechte] ), betriebsphasen[Betriebsphase] = Phase )
+        RETURN ( Bis - Ab ) + 1 - G
+    )
+RETURN
+    DIVIDE ( Belegt, Verfuegbar )
+```
+
+Werte: **Gesamt = 86,3 %** (176/204). In einer Matrix mit `Betriebsphase` auf den
+Zeilen liefert sie je Zeile 68,6 % / 92,2 % und in der Gesamtzeile 86,3 %.
+
 ```dax
 ADR Netto = DIVIDE ( [Umsatz Netto], [Belegte Naechte] )
 ```
