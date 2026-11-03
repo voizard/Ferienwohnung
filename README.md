@@ -84,7 +84,7 @@ Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
    [`dax/measures.md`](dax/measures.md) (Abschnitt 8B).
 
 <!-- Screenshot der Seite "Preis testen" -->
-![Preis testen – Break-even je Preisschritt](screenshots/02_preisanpassung.png?v=2)
+![Preis testen – Break-even je Preisschritt](screenshots/02_preis-testen.png?v=1)
 
 *Momentaufnahme für **Oktober 2026** (der Monat ist über den Slicer wählbar).
 13 Preisschritte von −30 % bis +30 % – je Zeile: Preis je Nacht, Umsatz bei
@@ -196,7 +196,7 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
 - `reports/Phasenvergleich_Ferienwohnung.pdf` – daraus gebautes PDF (3 Seiten)
 - `screenshots/01_overview.png` – Startseite des Reports (KPI-Karten und Monatsverlauf)
-- `screenshots/02_preisanpassung.png` – Seite „Preis testen": Break-even je Preisschritt (Preis × Auslastung) mit Ampel und hervorgehobener Referenzzeile
+- `screenshots/02_preis-testen.png` – Seite „Preis testen": Break-even je Preisschritt (Preis × Auslastung) mit Ampel und hervorgehobener Referenzzeile
 - `pbix/eigene_Airbnb_Auswertung.pbix` – Power BI Datei
 
 ## Reproduktion
