@@ -1067,3 +1067,91 @@ decken sich exakt mit der Monatstabelle in `analyse/BEFUNDE.md`.
 > Werte live): dann die Measures aus 8.1–8.6 anlegen und die Tabelle auf die
 > Delta-Tabelle + Measures umstellen. Die statische Fassung bleibt die
 > Gegenprobe – stimmen die Measures, liefern sie dieselben Zahlen.
+
+---
+
+## 9. Seite „Buchungstreiber" (Treiberanalyse, Variante B)
+
+**Zweck:** Zeigen, *wann* gebucht wird und *was* den Preis je Nacht erklärt.
+Die Seite ist **deskriptiv plus Modellergebnis** – sie rechnet nichts, sie
+stellt dar.
+
+**Wichtig vorab:** Die Statistik (Logit mit geclusterten Standardfehlern,
+OLS mit HC3) rechnet **Python** in `analyse/buchungstreiber.py`. Power BI
+kann das nicht. Die Modelle werden als **fertige Tabelle** geladen und nur
+angezeigt – mit Fußnote „in Python berechnet".
+
+**Datenquelle:** vier Blätter in `Airbnb_Datensatz_PowerBI.xlsx`
+(erzeugt von `analyse/buchungstreiber.py`):
+
+| Blatt | Inhalt | Zeilen |
+| --- | --- | --- |
+| `treiber_wochentag` | Auslastung je Wochentag + Flag `Wochenende` | 7 |
+| `treiber_verteilung` | Buchungen je Anreisetag / Aufenthaltsdauer / Vorlauf (`Dimension` + `Auspraegung`) | 17 |
+| `treiber_modell` | Modell A (Odds Ratio) + Modell B (EUR je Nacht) mit KI und p-Wert | 5 |
+| `treiber_luecken` | unbelegte buchbare Tage je Monat | 8 |
+
+### 9.1 Seitenaufbau (Vorschlag)
+
+| Bereich | Inhalt | Visual |
+| --- | --- | --- |
+| Oben | 3 KPI-Karten: **Auslastung 86,3 %** · **Fr/Sa 96,7 %** · **ADR −2,02 € je Nacht** | Cards |
+| Mitte links | Auslastung je Wochentag, Fr/Sa farblich abgesetzt | Balken |
+| Mitte rechts | Buchungen je Anreisetag | Balken |
+| Unten links | Aufenthaltsdauer-Klassen (2 Nächte 43 %) und Vorlauf-Klassen | Balken (je gefiltert) |
+| Unten rechts | Modelltabelle mit KI und p-Wert | Tabelle |
+| Fußzeile | Ehrlichkeitshinweis aus 9.4, klein, grau | Textfeld |
+
+### 9.2 Schritte in Power BI
+
+1. **Laden:** im Blatt-Explorer `treiber_wochentag`, `treiber_verteilung`,
+   `treiber_modell`, `treiber_luecken` anhaken → *Laden*.
+2. **Auslastung je Wochentag:** Visual *Balkendiagramm* → Achse `Wochentag`,
+   Wert `Auslastung_Pct`. Sortierung: Spalte `Sort` markieren →
+   *Spaltentools* → **Nach Spalte sortieren** = `Sort`.
+3. **Fr/Sa absetzen:** Spalte `Wochenende` → *Formatieren* →
+   *Balken* → *Farbe* → **Bedingte Formatierung** → *Regeln* →
+   „Text enthält `ja`" → `#C0392B`, sonst `#5B8DB8`.
+4. **Verteilungen:** drei Balken-Visuals auf `treiber_verteilung`, jedes mit
+   **Visual-Filter** auf `Dimension` (`Anreisetag` / `Aufenthalt` / `Vorlauf`),
+   Achse `Auspraegung` (nach `Sort` sortiert), Wert `Buchungen`.
+   Alternative: **ein** Balken-Visual + Slicer auf `Dimension`.
+5. **Modelltabelle:** Visual *Tabelle* auf `treiber_modell`, Spalten
+   `Modell`, `Merkmal`, `Effekt`, `KI_unten`, `KI_oben`, `p_Wert`,
+   `Signifikant`, `Lesart`. Spalte `Signifikant` → *Zellenlemente* →
+   *Hintergrundfarbe* → *Regeln*: „Text enthält `ja`" → `#E3F2E1`,
+   „Text enthält `nein`" → `#F2F2F2`.
+6. **Fußnote:** Textfeld „Die Modellwerte stammen aus einer Logit-/OLS-
+   Schätzung in Python (geclusterte Standardfehler bzw. HC3) – nicht aus DAX."
+
+### 9.3 Zahlenformat
+
+Die Spalten `Auslastung_Pct`, `Anteil_Pct` stehen als **Prozentpunkt-Zahl**
+(86,21 = 86,21 %) – **kein** Prozentformat darauf legen, sonst zeigt es
+8.621 %. Für `Effekt`, `KI_unten`, `KI_oben`: Dezimalzahl mit 2 Stellen.
+`p_Wert`: Dezimalzahl mit 3 Stellen.
+
+### 9.4 Ehrlichkeitshinweis (Fußzeile)
+
+> **Zusammenhang, nicht Ursache.** Der Preis ist selbst gesetzt, der
+> Wochentag nicht – nur der Wochentag ist hier exogen. Modell A stützt sich
+> auf **28 unbelegte Tage**; mehr als zwei Prädiktoren wären damit unseriös.
+> Saison und Betriebsphase sind in diesen Daten **untrennbar** (Phase 1 =
+> Okt–Dez, Phase 2 = Mai–Okt). Alle 28 Lücken liegen **zwischen** zwei
+> Aufenthalten, keine am Rand.
+
+### 9.5 Die Kernbefunde (für Karten und Text)
+
+- **Freitag/Samstag sind praktisch ausgebucht** (96,7 % / 96,7 %), Montag
+  ist mit 75,9 % der schwächste Tag.
+- **Das Wochenende trägt die Nachfrage**, nicht der Preis: Odds Ratio
+  **7,79** (95 %-KI 1,37–44,32, p = 0,021) – aber das Intervall ist weit.
+- **Der Preis je Nacht reagiert auf die Aufenthaltsdauer**, nicht auf den
+  Wochentag: **−2,02 €** je zusätzliche Nacht (p = 0,005).
+- **70 % der Aufenthalte sind ≤ 3 Nächte**, medianer Vorlauf 16 Tage →
+  Kurzfrist- und Kurzaufenthaltstourismus.
+
+> **Wenn die Seite live reagieren soll:** Dann müsste Modell A als DAX-Logit
+> nachgebaut werden – das ist nicht sinnvoll (geclusterte Standardfehler
+> gibt es in DAX nicht). Die Modelltabelle bleibt deshalb statisch, die
+> beschreibenden Visuals reagieren normal auf Slicer.

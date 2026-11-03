@@ -1,0 +1,8 @@
+﻿Wochentag;Belegte_Tage;Buchbare_Tage;Auslastung_Pct;Wochenende;Sort
+Montag;22;29;75,86;nein;1
+Dienstag;24;29;82,76;nein;2
+Mittwoch;25;29;86,21;nein;3
+Donnerstag;24;29;82,76;nein;4
+Freitag;29;30;96,67;ja;5
+Samstag;29;30;96,67;ja;6
+Sonntag;23;28;82,14;nein;7

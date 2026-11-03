@@ -82,6 +82,10 @@ Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
    Preissenkung/-erhöhung, um denselben Umsatz zu halten? Mit Ampelfarbe und
    hervorgehobener Referenzzeile. Aufbau ohne DAX in
    [`dax/measures.md`](dax/measures.md) (Abschnitt 8B).
+5. **Buchungstreiber** – Wann wird gebucht und was erklärt den Preis je Nacht?
+   Auslastung je Wochentag, Anreisetage, Aufenthaltsdauer, Buchungsvorlauf,
+   Lücken und das Modellergebnis (Odds Ratio, EUR je Nacht) als fertige Tabelle.
+   Aufbau in [`dax/measures.md`](dax/measures.md) (Abschnitt 9).
 
 <!-- Screenshot der Seite "Preis testen" -->
 ![Preis testen – Break-even je Preisschritt](screenshots/02_preis-testen.png?v=1)
@@ -185,12 +189,15 @@ Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 - `daten/anpassungen.csv` – Airbnb-Anpassungen
 - `daten/kalender.csv` – Datumstabelle (374 Tage, 11 Spalten; Spalte `Teilmonat` kennzeichnet angeschnittene Monate)
 - `daten/kalender_tagesbasis.csv` – Zwischenstand der Tages-Tabelle
-- `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle Tabellen als Excel-Datei (buchungen, anpassungen, kalender, betriebsphasen, preisszenarien, preisszenarien_monat + LIESMICH)
+- `daten/Airbnb_Datensatz_PowerBI.xlsx` – alle Tabellen als Excel-Datei (buchungen, anpassungen, kalender, betriebsphasen, preisszenarien, preisszenarien_monat, treiber_wochentag, treiber_verteilung, treiber_modell, treiber_luecken + LIESMICH)
 - `daten/datadictionary.md` – Spalten, Typen, bekannte Fallen
 - `daten/build_datasets.py` – Roh-Export → `buchungen.csv`, `anpassungen.csv`, `kalender.csv`
 - `daten/build_kalender_tagesbasis.py` – Tages-Tabelle mit Buchbarkeitsfenstern
 - `daten/add_flags_to_kalender.py` – ergänzt `kalender.csv` um Betriebsphase/Verfügbar/Belegt/Teilmonat
 - `analyse/preisszenario.py` – Break-even-Szenarien (Preis × Auslastung) → `analyse/out/preisszenarien_*.csv`
+- `analyse/buchungstreiber.py` – Treiberanalyse (Logit/OLS) → `analyse/BEFUNDE.md`, `analyse/out/treiber_*.csv`, `analyse/figs/*.png`
+- `analyse/out/treiber_wochentag.csv` / `_verteilung` / `_modell` / `_luecken.csv` – fertige Tabellen der Seite „Buchungstreiber" (deutsche Schreibweise)
+- `analyse/BEFUNDE.md` – Befundbericht der Treiberanalyse (alle Zahlen sind Skriptausgaben)
 - `analyse/out/preisszenarien_gesamt.csv` / `_phase1` / `_phase2` / `_monat.csv` – fertige Szenario-Tabellen (deutsche Schreibweise, mit Ampel/Hinweis/Zeilenfarbe)
 - `dax/measures.md` – alle Measures mit Erklärung
 - `reports/Phasenvergleich_Ferienwohnung.tex` – Report-Quelle (LaTeX)
@@ -210,6 +217,7 @@ python3 daten/build_datasets.py             # Roh-Export → buchungen/anpassung
 python3 daten/build_kalender_tagesbasis.py  # Tages-Tabelle mit Buchbarkeitsfenstern
 python3 daten/add_flags_to_kalender.py      # Flags in kalender.csv zurückschreiben
 python3 analyse/preisszenario.py            # Break-even-Szenarien (Preis × Auslastung)
+python3 analyse/buchungstreiber.py          # Treiberanalyse + Tabellen der Seite "Buchungstreiber"
 python3 reports/build_xlsx.py               # Excel-Datei für Power BI
 tectonic reports/Phasenvergleich_Ferienwohnung.tex --outdir reports  # LaTeX-Report → PDF
 ```

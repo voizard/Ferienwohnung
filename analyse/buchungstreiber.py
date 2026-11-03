@@ -283,6 +283,119 @@ def md_auslastung_tabelle(g, spalte_de="Wochentag"):
     return "\n".join(zeilen)
 
 
+# --------------------------------------------------------------------------
+# 8) Power-BI-Seite "Buchungstreiber" (Variante B: deskriptiv + Modell)
+# --------------------------------------------------------------------------
+def g(v, n=2):
+    """Zahl als deutsche Zeichenkette (Dezimalkomma)."""
+    return f"{v:.{n}f}".replace(".", ",")
+
+
+def treiber_wochentag(wd):
+    """Auslastung je Wochentag - der deutlichste Einzelbefund."""
+    zeilen = []
+    for i, (tag, r) in enumerate(wd.iterrows(), start=1):
+        zeilen.append([tag, str(int(r["sum"])), str(int(r["count"])),
+                       g(r["quote"] * 100), 
+                       "ja" if tag in WOCHENENDE_TAGE else "nein", str(i)])
+    return (["Wochentag", "Belegte_Tage", "Buchbare_Tage", "Auslastung_Pct",
+             "Wochenende", "Sort"], zeilen)
+
+
+def treiber_verteilung(buchungen):
+    """Buchungen je Anreisetag, Aufenthaltsdauer-Klasse und Vorlauf-Klasse."""
+    b = buchungen.copy()
+    n = len(b)
+    zeilen = []
+
+    tags = b["Anreisetag_Wochentag"].value_counts()
+    for i, tag in enumerate(WOCHENTAG_ORDER, start=1):
+        k = int(tags.get(tag, 0))
+        zeilen.append(["Anreisetag", tag, str(k), g(k / n * 100, 1), str(i)])
+
+    kl = pd.cut(b["Naechte"].astype(int), bins=[0, 1, 2, 3, 5, 999],
+                labels=["1 Nacht", "2 Nächte", "3 Nächte",
+                        "4-5 Nächte", "6+ Nächte"])
+    for i, lab in enumerate(kl.cat.categories, start=1):
+        k = int((kl == lab).sum())
+        zeilen.append(["Aufenthalt", lab, str(k), g(k / n * 100, 1), str(i)])
+
+    kl = pd.cut(b["Vorlauf_Tage"].astype(int), bins=[-1, 7, 14, 30, 60, 9999],
+                labels=["0-7 Tage", "8-14 Tage", "15-30 Tage",
+                        "31-60 Tage", "61+ Tage"])
+    for i, lab in enumerate(kl.cat.categories, start=1):
+        k = int((kl == lab).sum())
+        zeilen.append(["Vorlauf", lab, str(k), g(k / n * 100, 1), str(i)])
+
+    return (["Dimension", "Auspraegung", "Buchungen", "Anteil_Pct", "Sort"],
+            zeilen)
+
+
+def treiber_modell(tab_a, m_b):
+    """Modellergebnisse als Tabelle. Die Statistik selbst rechnet Python,
+    nicht Power BI - die Seite zeigt sie nur an."""
+    label = {"wochenende": "Freitag/Samstag", "phase2": "Betriebsphase 2",
+             "naechte": "je zusätzliche Nacht"}
+    zeilen = []
+
+    def sig(p):
+        return "ja" if p < 0.05 else "nein"
+
+    for key in ("wochenende", "phase2"):
+        r = tab_a.loc[key]
+        p = float(r["p_wert"])
+        lesart = f"{g(float(r['or']))}x höhere Chance auf Belegung"
+        if p >= 0.05:
+            lesart += " (nicht signifikant)"
+        zeilen.append(["A - Chance auf Belegung (Logit)", label[key],
+                       "Odds Ratio", g(float(r["or"])),
+                       g(float(r["or_lo"])), g(float(r["or_hi"])),
+                       g(p, 3), sig(p), lesart])
+
+    ci = m_b.conf_int()
+    for key in ("wochenende", "phase2", "naechte"):
+        c, p = float(m_b.params[key]), float(m_b.pvalues[key])
+        lesart = f"{ds(c)} EUR je Nacht"
+        if key == "naechte":
+            lesart = f"{ds(c)} EUR je zusätzliche Nacht"
+        if p >= 0.05:
+            lesart += " (nicht signifikant)"
+        zeilen.append(["B - Preis je Nacht (OLS)", label[key], "EUR je Nacht",
+                       g(c), g(float(ci.loc[key, 0])), g(float(ci.loc[key, 1])),
+                       g(p, 3), sig(p), lesart])
+
+    return (["Modell", "Merkmal", "Effekt_Typ", "Effekt", "KI_unten", "KI_oben",
+             "p_Wert", "Signifikant", "Lesart"], zeilen)
+
+
+def treiber_luecken(luecken):
+    """Unbelegte buchbare Tage je Monat (alle liegen zwischen zwei Aufenthalten)."""
+    if not len(luecken):
+        return (["Monat", "Unbelegte_Tage", "Sort"], [])
+    g_ = luecken.groupby(luecken["Datum"].astype(str).str[:7]).size()
+    zeilen = []
+    for i, (k, v) in enumerate(g_.items(), start=1):
+        zeilen.append([f"{MONAT_DE[int(k[5:7])]} {k[:4]}", str(int(v)), str(i)])
+    return (["Monat", "Unbelegte_Tage", "Sort"], zeilen)
+
+
+def schreibe_treiber_seiten(wd, buchungen, tab_a, m_b, luecken):
+    """Schreibt die vier Tabellen der Seite 'Buchungstreiber' als CSV."""
+    tabellen = {
+        "treiber_wochentag.csv": treiber_wochentag(wd),
+        "treiber_verteilung.csv": treiber_verteilung(buchungen),
+        "treiber_modell.csv": treiber_modell(tab_a, m_b),
+        "treiber_luecken.csv": treiber_luecken(luecken),
+    }
+    for name, (header, zeilen) in tabellen.items():
+        with open(os.path.join(OUT, name), "w", encoding="utf-8-sig",
+                  newline="") as fh:
+            w = csv.writer(fh, delimiter=";")
+            w.writerow(header)
+            w.writerows(zeilen)
+    return {k: len(v[1]) for k, v in tabellen.items()}
+
+
 def main():
     kalender = lade_kalender()
     buchungen = lade_buchungen()
@@ -326,6 +439,9 @@ def main():
     _de("modell_a_odds_ratios.csv", tab_a)
     if len(luecken):
         _de("unbelegte_tage.csv", luecken, index=False)
+
+    # ---- Tabellen der Power-BI-Seite "Buchungstreiber"
+    treiber_zeilen = schreibe_treiber_seiten(wd, buchungen, tab_a, m_b, luecken)
 
     # ---- Grafiken
     fig_auslastung_wochentag(panel, os.path.join(FIGS, "auslastung_wochentag.png"))
@@ -519,6 +635,8 @@ Preis je Nacht.
     print(m_b.summary2().tables[1].round(3).to_string())
     print(f"R2 = {r2:.3f} | ohne Verlaengerung R2 = {r2b:.3f} | n = {len(b)}")
     print("\nGeschrieben: BEFUNDE.md, out/*.csv, figs/*.png")
+    print("Seite Buchungstreiber:", ", ".join(
+        f"{k}={v}" for k, v in treiber_zeilen.items()))
 
 
 if __name__ == "__main__":

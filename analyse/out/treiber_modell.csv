@@ -1,0 +1,6 @@
+﻿Modell;Merkmal;Effekt_Typ;Effekt;KI_unten;KI_oben;p_Wert;Signifikant;Lesart
+A - Chance auf Belegung (Logit);Freitag/Samstag;Odds Ratio;7,79;1,37;44,32;0,021;ja;7,79x höhere Chance auf Belegung
+A - Chance auf Belegung (Logit);Betriebsphase 2;Odds Ratio;6,19;0,48;79,47;0,162;nein;6,19x höhere Chance auf Belegung (nicht signifikant)
+B - Preis je Nacht (OLS);Freitag/Samstag;EUR je Nacht;-6,68;-14,42;1,05;0,090;nein;-6,68 EUR je Nacht (nicht signifikant)
+B - Preis je Nacht (OLS);Betriebsphase 2;EUR je Nacht;-7,93;-18,18;2,32;0,130;nein;-7,93 EUR je Nacht (nicht signifikant)
+B - Preis je Nacht (OLS);je zusätzliche Nacht;EUR je Nacht;-2,02;-3,44;-0,60;0,005;ja;-2,02 EUR je zusätzliche Nacht

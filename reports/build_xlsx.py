@@ -116,6 +116,11 @@ liesmich = [
     ['Spalten Ampel/Hinweis/Ist_Auslastung_Pct', 'Fertige Hilfsspalten fuer die Seite "Preis testen" OHNE DAX: Ampel = gruen/rot/unmoeglich/referenz (fuer die bedingte Hintergrundfarbe), Hinweis = Klartext ("darf 9,1 % verlieren"), Ist_Auslastung_Pct = Vergleichswert. unmoeglich = Break-even-Auslastung ueber 100 % - die noetigen Naechte gibt es gar nicht, die Preissenkung ist nicht kompensierbar. Die Spalten *_Pct stehen als Prozentpunkt-Zahl (86,27 = 86,27 %) - KEIN Prozentformat darauf legen.'],
     ['Spalte Zeilenfarbe', 'Enthaelt NUR in der Referenzzeile (Preis_Delta_Pct = 0) einen Hex-Wert (#E8EEF4), sonst leer. Damit laesst sich die Referenzzeile in Power BI mit EINEM Dialog je Spalte hervorheben: Spalte -> Formatieren -> Zellenlemente -> Hintergrundfarbe -> Bedingte Formatierung -> Formatstil "Feldwert" -> Feld Zeilenfarbe. Fuer die ganze Zeile auf jeder sichtbaren Spalte wiederholen (Preis_Delta_Pct, Preis_je_Nacht_EUR, Umsatz_Konstant_EUR, Break_even_Auslastung_Pct, Hinweis). Fett geht in Power BI nur spaltig, nie zeilenweise - die Hervorhebung traegt daher Fuelle + Rahmen.'],
     ['Format (Festlegung Chris)', 'Alle Exporte in deutscher Schreibweise: Semikolon als Trenner, Dezimalkomma, UTF-8 mit BOM. Sonst liest ein deutsches Power BI den Punkt als Tausenderpunkt (aus 40,46 wird 4046).'],
+    ['Blatt treiber_wochentag', 'Auslastung je Wochentag (Seite "Buchungstreiber"). 7 Zeilen. Wochenende = ja fuer Freitag/Samstag. Sort steuert die Reihenfolge Montag..Sonntag. Erzeugt von analyse/buchungstreiber.py.'],
+    ['Blatt treiber_verteilung', 'Buchungen je Anreisetag, Aufenthaltsdauer-Klasse und Buchungsvorlauf-Klasse (je 1 Zeile, Dimension + Auspraegung). Die drei Bloecke stehen untereinander - im Power BI je Block ein eigenes Visual, gefiltert ueber Dimension.'],
+    ['Blatt treiber_modell', 'Ergebnisse der beiden Modelle aus analyse/buchungstreiber.py - WICHTIG: diese Statistik rechnet PYTHON, nicht Power BI (Logit mit geclusterten Standardfehlern, OLS mit HC3). Die Seite zeigt die Tabelle nur an. Signifikant = ja bei p < 0,05. Effekt = Odds Ratio (Modell A) bzw. EUR je Nacht (Modell B).'],
+    ['WICHTIG: keine Kausalitaet', 'Die Treiberanalyse zeigt ZUSAMMENHAENGE, keine Ursachen. Der Preis ist selbst gesetzt, der Wochentag nicht - nur der Wochentag ist hier exogen. n = 28 unbelegte Tage tragen Modell A; mehr als zwei Praediktoren waeren unseriös. Saison und Betriebsphase sind in diesen Daten untrennbar.'],
+    ['Blatt treiber_luecken', 'Unbelegte buchbare Tage je Monat. Alle 28 liegen ZWISCHEN zwei Aufenthalten, keiner am Rand des Buchbarkeitsfensters - der Erloes-Hebel ist kleiner als er aussieht (Mindestaufenthalt/Reinigungsabstand).'],
 ]
 sheets.append(('LIESMICH', lh, liesmich))
 
@@ -143,6 +148,14 @@ sheets.append(('preisszenarien', sp_header, sp_rows))
 # Preisschritt. Verfuegbare Naechte je Monat aus kalender.csv.
 mp_header, mp_rows = monats_szenarien()
 sheets.append(('preisszenarien_monat', mp_header, mp_rows))
+
+# Treiberanalyse fuer die Seite "Buchungstreiber" (Variante B: deskriptiv +
+# Modellergebnis). Erzeugt von analyse/buchungstreiber.py.
+for name in ('treiber_wochentag', 'treiber_verteilung', 'treiber_modell',
+             'treiber_luecken'):
+    header, rows = coerce(read_csv(os.path.join('..', 'analyse', 'out',
+                                                name + '.csv')))
+    sheets.append((name, header, rows))
 
 # --- XLSX schreiben ----------------------------------------------------
 CT = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',

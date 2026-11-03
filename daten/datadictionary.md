@@ -151,6 +151,27 @@ Anreisemonat) werden Nächte und Auslastung hier aus `kalender.csv` gezogen –
 eine Nacht zählt in den Monat, in dem sie **liegt**. Sonst landete ein Aufenthalt
 28.09.–03.10. komplett im September und der Oktober wäre zu leer.
 
+### `treiber_*.csv` (Seite „Buchungstreiber")
+
+Erzeugt von `analyse/buchungstreiber.py` – **keine** Fakten, sondern fertige
+Tabellen für die Report-Seite „Buchungstreiber". Deutsche Schreibweise.
+
+| Datei | Inhalt | Zeilen |
+| --- | --- | --- |
+| `treiber_wochentag.csv` | Auslastung je Wochentag (`Wochenende` = ja/nein für die Farbe, `Sort` = Mo–So) | 7 |
+| `treiber_verteilung.csv` | Buchungen je `Dimension` (`Anreisetag` / `Aufenthalt` / `Vorlauf`) und `Auspraegung` | 17 |
+| `treiber_modell.csv` | Modellergebnisse: `Effekt_Typ`, `Effekt`, `KI_unten`, `KI_oben`, `p_Wert`, `Signifikant`, `Lesart` | 5 |
+| `treiber_luecken.csv` | unbelegte buchbare Tage je Monat | 8 |
+
+**Die Statistik rechnet Python, nicht Power BI.** `treiber_modell.csv`
+enthält die Ergebnisse eines Logit (geclusterte Standardfehler nach
+Belegungsepisode) und eines OLS (HC3, Buchungsebene). Power BI kann das
+nicht nachrechnen – die Seite zeigt die Tabelle nur an. `Signifikant` = ja
+bei p < 0,05.
+
+**Prozentpunkt-Zahlen:** `Auslastung_Pct` und `Anteil_Pct` stehen als Zahl
+(86,21 = 86,21 %) – **kein** Prozentformat darauf legen.
+
 ## Bekannte Fallen im Rohdaten-Export
 
 **1. Gemischte Dezimaltrenner in einer Datei.**
@@ -244,5 +265,9 @@ bereits enthalten. Arbeitswert für Berechnungen: **15 %**.
 - **Gesperrte Nächte** (Eigennutzung, Reparatur) sind im Export nicht sichtbar;
   die Auslastung ist dadurch eine **Obergrenze**.
 - **Kosten fehlen** (Nebenkosten, Reinigung, Instandhaltung) → kein Deckungsbeitrag.
+- **Korrelation, nicht Kausalität:** Die Treiberanalyse (`treiber_*.csv`)
+  zeigt Zusammenhänge. Der Preis ist selbst gesetzt, der Wochentag nicht –
+  nur der Wochentag ist exogen. Modell A stützt sich auf 28 unbelegte Tage;
+  mehr als zwei Prädiktoren wären damit unseriös.
 - **Keine saisonale Aussage** und kein YoY: Phase 1 (Herbst/Winter) und Phase 2
   (Sommer) sind nicht vergleichbar genug für kausale Aussagen.
