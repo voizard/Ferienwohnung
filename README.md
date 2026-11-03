@@ -84,11 +84,12 @@ Ausführliche Measure-Definitionen: [`dax/measures.md`](dax/measures.md)
    [`dax/measures.md`](dax/measures.md) (Abschnitt 8B).
 
 <!-- Screenshot der Seite "Preis testen" -->
-![Preis testen – Break-even je Preisschritt](screenshots/02_preisanpassung.png?v=1)
+![Preis testen – Break-even je Preisschritt](screenshots/02_preisanpassung.png?v=2)
 
-*13 Preisschritte von −30 % bis +30 %. Je Zeile: Preis je Nacht, Umsatz bei
+*Momentaufnahme für **Oktober 2026** (der Monat ist über den Slicer wählbar).
+13 Preisschritte von −30 % bis +30 % – je Zeile: Preis je Nacht, Umsatz bei
 konstanter Auslastung, Break-even-Nächte, Break-even-Auslastung und ein
-Klartext-Hinweis. Grau hervorgehoben = heutiger Preis (Referenz).*
+Klartext-Hinweis. Hervorgehoben = heutiger Preis (Referenz).*
 
 Die Screenshots der Modellansicht und der weiteren Report-Seiten liegen als
 `pbix/eigene_Airbnb_Auswertung.pbix` bei (Power BI Desktop öffnen).
