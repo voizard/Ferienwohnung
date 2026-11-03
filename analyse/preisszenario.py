@@ -35,7 +35,8 @@ SCHRITTE = [x / 100 for x in range(-30, 31, 5)]
 # Spalten der Tabelle (einheitlich fuer CSV und XLSX-Blatt)
 KOPF = ['Basis', 'Preis_Delta_Pct', 'Preis_je_Nacht_EUR', 'Umsatz_Konstant_EUR',
         'Umsatz_Delta_EUR', 'Umsatz_Delta_Pct', 'Break_even_Naechte',
-        'Break_even_Auslastung_Pct', 'Erforderliche_Nachfrageaenderung_Pct']
+        'Break_even_Auslastung_Pct', 'Erforderliche_Nachfrageaenderung_Pct',
+        'Ist_Auslastung_Pct', 'Ampel', 'Hinweis']
 
 
 def lade_buchungen():
@@ -63,11 +64,24 @@ def szenarien(basis_name, umsatz, naechte, verfuegbar):
     Bruchteil - so sind sie in Power BI direkt lesbar.
     """
     basis = umsatz / naechte
+    ist = naechte / verfuegbar * 100          # Ist-Auslastung der Basis in %
     zeilen = []
     for dp in SCHRITTE:
         preis = basis * (1 + dp)
         umsatz_k = naechte * preis
         be = umsatz / preis
+        be_ausl = be / verfuegbar * 100
+        erf = (be - naechte) / naechte * 100
+        # Ampel + Klartext direkt in die Daten - so braucht die Power-BI-Seite
+        # kein DAX-Measure fuer Farbe und Beschriftung.
+        if abs(dp) < 0.0001:
+            ampel, hinweis = 'referenz', 'Referenz (heutiger Preis)'
+        elif be_ausl <= ist:
+            ampel = 'gruen'
+            hinweis = f'darf {abs(erf):.1f} % verlieren'.replace('.', ',')
+        else:
+            ampel = 'rot'
+            hinweis = f'braucht {erf:.1f} % mehr'.replace('.', ',')
         zeilen.append([
             basis_name,
             round(dp * 100, 2),
@@ -76,8 +90,11 @@ def szenarien(basis_name, umsatz, naechte, verfuegbar):
             round(umsatz_k - umsatz, 2),
             round((umsatz_k - umsatz) / umsatz * 100, 2),
             round(be, 1),
-            round(be / verfuegbar * 100, 2),
-            round((be - naechte) / naechte * 100, 2),
+            round(be_ausl, 2),
+            round(erf, 2),
+            round(ist, 2),
+            ampel,
+            hinweis,
         ])
     return zeilen
 
@@ -117,7 +134,8 @@ def main():
             w.writerow(KOPF)
             for z in zeilen:
                 w.writerow([z[0], _de(z[1]), _de(z[2]), _de(z[3]), _de(z[4]),
-                            _de(z[5]), _de(z[6], 1), _de(z[7]), _de(z[8])])
+                            _de(z[5]), _de(z[6], 1), _de(z[7]), _de(z[8]),
+                            _de(z[9]), z[10], z[11]])
 
         print(f'\n=== {name} ===')
         print(f'Basis: Umsatz {umsatz:.2f} EUR | Naechte {naechte} | '

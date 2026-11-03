@@ -831,3 +831,63 @@ Break-even Farbe =
     VAR Ist = DIVIDE ( [Belegte Naechte], [Verfuegbare Naechte] )
     RETURN IF ( [Break-even Auslastung %] <= Ist, "#2E7D32", "#C62828" )
 ```
+
+---
+
+## 8B. Seitenaufbau OHNE DAX (statische Variante)
+
+Für den Fall, dass die Variablen/Measures noch nicht angelegt sind. Die Tabelle
+`preisszenarien` (Blatt in `Airbnb_Datensatz_PowerBI.xlsx`, oder die drei
+CSVs in `analyse/out/`) bringt **alles schon fertig mit** – kein einziges
+Measure nötig.
+
+### 8B.1 Was in der Tabelle steht
+
+`analyse/preisszenario.py` erzeugt 12 Spalten. Die letzten drei sind für die
+Seite da und sparen jede Rechnung:
+
+| Spalte | Zweck |
+| --- | --- |
+| `Ist_Auslastung_Pct` | Deine heutige Auslastung je Basis (gesamt 86,27). Der Vergleichswert. |
+| `Ampel` | `gruen` / `rot` / `referenz` – fertig zum Einfärben, ohne Formel. |
+| `Hinweis` | Klartext „darf 9,1 % verlieren" bzw. „braucht 11,1 % mehr". |
+
+Filter `Basis = gesamt` in den Filterbereich der Tabelle ziehen (die Datei
+enthält gesamt + beide Phasen in einer Tabelle).
+
+### 8B.2 Schritte in Power BI (nachvollziehbar)
+
+1. **Daten holen** → `Airbnb_Datensatz_PowerBI.xlsx` → Blatt **`preisszenarien`**
+   anhaken → *Laden*. (Alternativ die CSV `preisszenarien_gesamt.csv`, dann im
+   Power-Query-Editor Trennzeichen **Semikolon**, Datentyp der Zahlspalten
+   **Dezimalzahl**, Gebietsschema **Deutsch**.)
+2. **Tabelle einfügen:** Visualisierung → *Tabelle*. In den Bereich *Spalten*
+   ziehen: `Preis_Delta_Pct`, `Preis_je_Nacht_EUR`, `Umsatz_Konstant_EUR`,
+   `Break_even_Auslastung_Pct`, `Hinweis`.
+3. **Sortieren:** im visuellen Kopfmenü der Spalte `Preis_Delta_Pct` →
+   *Nach aufsteigender Reihenfolge sortieren* (−30 … +30).
+4. **Zahlen formatieren:** Spalte anklicken → *Formatieren* → *Werteformat*.
+   `Preis_je_Nacht_EUR` und `Umsatz_Konstant_EUR`: **Dezimalzahl, 2 Stellen,
+   1.000er-Trennzeichen**. `Preis_Delta_Pct`: **Ganze Zahl**. Die Spalten
+   `*_Pct` stehen bereits als Prozentpunkt-Zahl (z. B. `86,27` = 86,27 %),
+   also **kein** Prozentformat darauf legen, sonst zeigt es 8.627 %.
+5. **Farbe auf die Break-even-Spalte** (ohne Measure): Spalte
+   `Break_even_Auslastung_Pct` anklicken → *Formatieren* → *Zellenlemente* →
+   *Hintergrundfarbe* → **Regeln (Fx)** → Feld `Ampel`,
+   „Text enthält `gruen`" → Grün `#E3F2E1`, „Text enthält `rot`" → Rot
+   `#FBE3E3`, „Text enthält `referenz`" → Grau `#F0F0F0`.
+   Schriftfarbe passend dunkel: `#1B5E20` / `#B71C1C` / `#333333`.
+6. **Referenzzeile hervorheben:** die Zeile `0,00` über `Hinweis =`
+   „Referenz" findest du über die Sortierung in der Mitte. Optional die Zeile
+   über *Bedingte Formatierung → Schriftfarbe* fett setzen.
+7. **Fußzeile:** Textfeld einfügen, Inhalt = Ehrlichkeitshinweis aus 8.5.
+
+### 8B.3 Optional: Datenbalken im Umsatz
+
+Spalte `Umsatz_Konstant_EUR` → *Formatieren* → *Zellenlemente* →
+*Datenbalken* → Farbe `#CFE2F3`. Kein zweites Diagramm nötig.
+
+> **Wenn die Seite später doch reagieren soll** (Regler „Preisänderung %",
+> Werte live): dann die Measures aus 8.1–8.6 anlegen und die Tabelle auf die
+> Delta-Tabelle + Measures umstellen. Die statische Fassung bleibt die
+> Gegenprobe – stimmen die Measures, liefern sie dieselben Zahlen.

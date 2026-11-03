@@ -112,6 +112,7 @@ liesmich = [
     ['Kosten', 'Noch nicht enthalten: Nebenkosten, Reinigung, Instandhaltung. Ein Deckungsbeitrag ist daher derzeit nicht berechenbar.'],
     ['Blatt preisszenarien', 'Preis-Szenarien fuer die Seite "Preis testen" (Preis -30 % bis +30 %). Umsatz bei KONSTANTER Auslastung und Break-even. Erzeugt von analyse/preisszenario.py.'],
     ['WICHTIG: keine Preiselastizitaet', 'Der Datensatz enthaelt KEINE gemessene Preiselastizitaet. Modell B erklaert den erzielten Preis, nicht die Nachfragereaktion. "Umsatz bei konstanter Auslastung" ist die Obergrenze; die Break-even-Spalte ist die Entscheidungsgroesse. Eine Elastizitaet ist eine Annahme.'],
+    ['Spalten Ampel/Hinweis/Ist_Auslastung_Pct', 'Fertige Hilfsspalten fuer die Seite "Preis testen" OHNE DAX: Ampel = gruen/rot/referenz (fuer die bedingte Hintergrundfarbe), Hinweis = Klartext ("darf 9,1 % verlieren"), Ist_Auslastung_Pct = Vergleichswert. Die Spalten *_Pct stehen als Prozentpunkt-Zahl (86,27 = 86,27 %) - KEIN Prozentformat darauf legen.'],
     ['Format (Festlegung Chris)', 'Alle Exporte in deutscher Schreibweise: Semikolon als Trenner, Dezimalkomma, UTF-8 mit BOM. Sonst liest ein deutsches Power BI den Punkt als Tausenderpunkt (aus 40,46 wird 4046).'],
 ]
 sheets.append(('LIESMICH', lh, liesmich))

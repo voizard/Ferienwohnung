@@ -1,14 +1,14 @@
-﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct
-Phase 1 (Okt-Dez 2025);-30,00;39,70;1389,37;-595,44;-30,00;50,0;98,04;42,86
-Phase 1 (Okt-Dez 2025);-25,00;42,53;1488,61;-496,20;-25,00;46,7;91,50;33,33
-Phase 1 (Okt-Dez 2025);-20,00;45,37;1587,85;-396,96;-20,00;43,8;85,78;25,00
-Phase 1 (Okt-Dez 2025);-15,00;48,20;1687,09;-297,72;-15,00;41,2;80,74;17,65
-Phase 1 (Okt-Dez 2025);-10,00;51,04;1786,33;-198,48;-10,00;38,9;76,25;11,11
-Phase 1 (Okt-Dez 2025);-5,00;53,87;1885,57;-99,24;-5,00;36,8;72,24;5,26
-Phase 1 (Okt-Dez 2025);0,00;56,71;1984,81;0,00;0,00;35,0;68,63;0,00
-Phase 1 (Okt-Dez 2025);5,00;59,54;2084,05;99,24;5,00;33,3;65,36;-4,76
-Phase 1 (Okt-Dez 2025);10,00;62,38;2183,29;198,48;10,00;31,8;62,39;-9,09
-Phase 1 (Okt-Dez 2025);15,00;65,22;2282,53;297,72;15,00;30,4;59,68;-13,04
-Phase 1 (Okt-Dez 2025);20,00;68,05;2381,77;396,96;20,00;29,2;57,19;-16,67
-Phase 1 (Okt-Dez 2025);25,00;70,89;2481,01;496,20;25,00;28,0;54,90;-20,00
-Phase 1 (Okt-Dez 2025);30,00;73,72;2580,25;595,44;30,00;26,9;52,79;-23,08
+﻿Basis;Preis_Delta_Pct;Preis_je_Nacht_EUR;Umsatz_Konstant_EUR;Umsatz_Delta_EUR;Umsatz_Delta_Pct;Break_even_Naechte;Break_even_Auslastung_Pct;Erforderliche_Nachfrageaenderung_Pct;Ist_Auslastung_Pct;Ampel;Hinweis
+Phase 1 (Okt-Dez 2025);-30,00;39,70;1389,37;-595,44;-30,00;50,0;98,04;42,86;68,63;rot;braucht 42,9 % mehr
+Phase 1 (Okt-Dez 2025);-25,00;42,53;1488,61;-496,20;-25,00;46,7;91,50;33,33;68,63;rot;braucht 33,3 % mehr
+Phase 1 (Okt-Dez 2025);-20,00;45,37;1587,85;-396,96;-20,00;43,8;85,78;25,00;68,63;rot;braucht 25,0 % mehr
+Phase 1 (Okt-Dez 2025);-15,00;48,20;1687,09;-297,72;-15,00;41,2;80,74;17,65;68,63;rot;braucht 17,6 % mehr
+Phase 1 (Okt-Dez 2025);-10,00;51,04;1786,33;-198,48;-10,00;38,9;76,25;11,11;68,63;rot;braucht 11,1 % mehr
+Phase 1 (Okt-Dez 2025);-5,00;53,87;1885,57;-99,24;-5,00;36,8;72,24;5,26;68,63;rot;braucht 5,3 % mehr
+Phase 1 (Okt-Dez 2025);0,00;56,71;1984,81;0,00;0,00;35,0;68,63;0,00;68,63;referenz;Referenz (heutiger Preis)
+Phase 1 (Okt-Dez 2025);5,00;59,54;2084,05;99,24;5,00;33,3;65,36;-4,76;68,63;gruen;darf 4,8 % verlieren
+Phase 1 (Okt-Dez 2025);10,00;62,38;2183,29;198,48;10,00;31,8;62,39;-9,09;68,63;gruen;darf 9,1 % verlieren
+Phase 1 (Okt-Dez 2025);15,00;65,22;2282,53;297,72;15,00;30,4;59,68;-13,04;68,63;gruen;darf 13,0 % verlieren
+Phase 1 (Okt-Dez 2025);20,00;68,05;2381,77;396,96;20,00;29,2;57,19;-16,67;68,63;gruen;darf 16,7 % verlieren
+Phase 1 (Okt-Dez 2025);25,00;70,89;2481,01;496,20;25,00;28,0;54,90;-20,00;68,63;gruen;darf 20,0 % verlieren
+Phase 1 (Okt-Dez 2025);30,00;73,72;2580,25;595,44;30,00;26,9;52,79;-23,08;68,63;gruen;darf 23,1 % verlieren
